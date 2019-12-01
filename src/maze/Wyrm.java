@@ -2,6 +2,7 @@ package maze;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
 import additional.Cell_Status;
 import additional.Location;
@@ -11,16 +12,18 @@ public class Wyrm
     public Wyrm(Board curr_board )
     {
         maze = curr_board.get_maze();
+        paths_stack = new Stack<Path>();
     }
 
-    Location get_rand_loc(ArrayList<Location> possible_loc)
+    static Location get_rand_loc(ArrayList<Location> possible_loc)
     {
         Random rand = new Random();
-        //return possible_loc.get(0);   // depth first bithces
+        //return possible_loc.get(0);
+        paths_stack = new Stack<Path>();
         return possible_loc.get(rand.nextInt(possible_loc.size())); 
     }
 
-    ArrayList<Location> get_accessible_Locations(Location curr_loc)
+    static ArrayList<Location> get_accessible_Locations(Location curr_loc)
     {
         ArrayList<Location> actions = new ArrayList<Location>();
         
@@ -93,7 +96,7 @@ public class Wyrm
     }
 
     // changes surrounding -1 into 0, means changes nothing into walls
-    void wallify(Location curr_loc)
+    static void wallify(Location curr_loc)
     {
         int curr_row = curr_loc.get_row();
         int curr_col = curr_loc.get_column();
@@ -118,34 +121,38 @@ public class Wyrm
     // loop through the matrix and fill everything up
     public void carve()
     {
+        int id = 0;
         while(check() != null)
         {
             Location curr_loc = check();
-            while(curr_loc != null)
-            {
-                maze[curr_loc.get_row()][curr_loc.get_column()].visited = true;
-                maze[curr_loc.get_row()][curr_loc.get_column()].status = Cell_Status.PATH;
-                Location curr_next_loc = getLocation(curr_loc);
-                if(curr_next_loc == null)
-                {
-                    curr_loc = null;
-                    continue;
-                }
-                maze[curr_next_loc.get_row()][curr_next_loc.get_column()].visited = true;
-                maze[curr_next_loc.get_row()][curr_next_loc.get_column()].status = Cell_Status.PATH;
-                Location curr_next_next_loc = getLocation(curr_next_loc);
-                if(curr_next_next_loc == null)
-                {
-                    curr_loc = null;
-                    continue;
-                }
-                maze[curr_next_next_loc.get_row()][curr_next_next_loc.get_column()].visited = true;
-                maze[curr_next_next_loc.get_row()][curr_next_next_loc.get_column()].status = Cell_Status.PATH;
-
-                wallify(curr_loc);
-                wallify(curr_next_loc);
-                curr_loc = curr_next_next_loc;
-            }
+            Path tempPath = new Path(id, maze, curr_loc);
+            paths_stack.push(tempPath);
+            id++;
+//            while(curr_loc != null)
+//            {
+//                maze[curr_loc.get_row()][curr_loc.get_column()].visited = true;
+//                maze[curr_loc.get_row()][curr_loc.get_column()].status = Cell_Status.PATH;
+//                Location curr_next_loc = getLocation(curr_loc);
+//                if(curr_next_loc == null)
+//                {
+//                    curr_loc = null;
+//                    continue;
+//                }
+//                maze[curr_next_loc.get_row()][curr_next_loc.get_column()].visited = true;
+//                maze[curr_next_loc.get_row()][curr_next_loc.get_column()].status = Cell_Status.PATH;
+//                Location curr_next_next_loc = getLocation(curr_next_loc);
+//                if(curr_next_next_loc == null)
+//                {
+//                    curr_loc = null;
+//                    continue;
+//                }
+//                maze[curr_next_next_loc.get_row()][curr_next_next_loc.get_column()].visited = true;
+//                maze[curr_next_next_loc.get_row()][curr_next_next_loc.get_column()].status = Cell_Status.PATH;
+//
+//                wallify(curr_loc);
+//                wallify(curr_next_loc);
+//                curr_loc = curr_next_next_loc;
+//            }
         }    
     }
 
@@ -235,7 +242,7 @@ public class Wyrm
         carve();
     }
 
-    Location getLocation(Location curr_loc)
+    static Location getLocation(Location curr_loc)
     {
         ArrayList<Location> temp_list = new ArrayList<Location>();
         temp_list = get_accessible_Locations(curr_loc);
@@ -245,7 +252,8 @@ public class Wyrm
     }
     
 
-    // variables
-    Cell[][] maze;
+    // variables <3
+    static Stack<Path> paths_stack;
+    static Cell[][] maze;
 }
 

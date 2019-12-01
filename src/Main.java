@@ -10,7 +10,7 @@ public class Main
     {
         Board maze = new Board(100,100);
         Wyrm modified_maze = new Wyrm(maze);
-        modified_maze.create_maze(1000);
+        modified_maze.create_maze(150);
         //maze.print();
 
         JFrame obj = new JFrame();

@@ -1,8 +1,6 @@
 package additional;
 
-import game.Action;
-
-public class Location implements Action 
+public class Location
 {
 	private int row;
 	private int col;

@@ -2,10 +2,12 @@ package maze;
 
 //import java.util.LinkedHashSet;
 import java.awt.*;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 //import additional.*;
 import additional.Cell_Status;
+import additional.Location;
 import game.*;
 import game.Action;
 
@@ -31,14 +33,26 @@ public class Board extends JPanel implements State
         }
     }
 
-    public Set<Action> getApplicableActions(int row, int col) 
+    public Set<Action> getApplicableActions(Location location)
     {
-        //Set<Action> actions = new LinkedHashSet<Action>();
-        // to be implemented . . . 
+        Set<Action> actions = new LinkedHashSet<Action>();
+        // to be implemented . . .
+
+//        if(location.get_row() > 0)
+//        {
+//            Location left = new Location(location.get_row(), location.get_column() - 1);
+//            if(maze[left.get_row()][left.get_column()].status == Cell_Status.PATH ||
+//                    maze[left.get_row()][left.get_column()].status == Cell_Status.ROOM)
+//            {
+//                actions.add()
+//            }
+//        }
+
+
         return null;
     }
 
-    public State getActionResult(Action action) 
+    public State getActionResult(Action action)
     {
         // to be implemented . . .
         return null;
@@ -112,5 +126,7 @@ public class Board extends JPanel implements State
     int winWidth = 768;
     int winHeight = 768;
     int cellSize;
+
+
 
 }
