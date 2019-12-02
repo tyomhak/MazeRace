@@ -10,7 +10,6 @@ public class Room
     {
         int maze_width = maze[0].length;  
         int maze_height = maze.length;   
-        int min = 5;
         int scale = 5;
 
         int max_height = maze_height / scale;   // setting the max limit for the height

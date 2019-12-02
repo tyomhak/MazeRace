@@ -2,7 +2,6 @@ package maze;
 
 //import java.util.LinkedHashSet;
 import java.awt.*;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 //import additional.*;
@@ -15,6 +14,9 @@ import javax.swing.*;
 
 public class Board extends JPanel implements State
 {
+
+    private static final long serialVersionUID = 1L;
+
     public Board(int width, int height)
     {
         maze = new Cell[width][height];
@@ -35,7 +37,7 @@ public class Board extends JPanel implements State
 
     public Set<Action> getApplicableActions(Location location)
     {
-        Set<Action> actions = new LinkedHashSet<Action>();
+        //Set<Action> actions = new LinkedHashSet<Action>();
         // to be implemented . . .
 
 //        if(location.get_row() > 0)
@@ -72,7 +74,6 @@ public class Board extends JPanel implements State
 
     public void drawMaze(Graphics g)
     {
-        int col = 0;
         g.setColor(Color.ORANGE);
         for(int i = 0; i < maze.length; ++i)
         {
