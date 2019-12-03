@@ -283,7 +283,7 @@ public class Wyrm
                 close_path.remove(i);
         }
 
-        if(close_path.size() <= 1)
+        if(close_path.size() < 1)
             return null;
 
         else return close_path.get(0);
@@ -306,18 +306,27 @@ public class Wyrm
             if(new_path == null)
                 return false;
 
-            maze[temp_loc.get_row()][temp_loc.get_column()].status = Cell_Status.PATH;
-            maze[temp_loc.get_row()][temp_loc.get_column()].set_path(maze[curr_row][curr_col].get_path());
-            maze[temp_loc.get_row()][temp_loc.get_column()].get_path().path_cells.add(temp_loc);
+            Cell wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
+            Cell new_path_cell = maze[new_path.get_row()][new_path.get_column()];
 
-            maze[curr_row][curr_col].get_path().merge(maze[new_path.get_row()][new_path.get_column()].get_path());
+            wall_cell.status = Cell_Status.PATH;
+            wall_cell.set_path(maze[curr_row][curr_col].get_path());
+            wall_cell.get_path().path_cells.add(temp_loc);
+
+            if(wall_cell.get_path().path_cells.size() > new_path_cell.get_path().path_cells.size() )
+            {
+                wall_cell.get_Path().merge(new_path_cell.get_path());
+            }
+            else
+            {
+                new_path_cell.get_Path().merge(wall_cell.get_path());
+            }
 
         //}
             return true;
     }
 
     /* Functions Needed For Cleaning_up end here */
-
 
 }
 

@@ -8,7 +8,7 @@ public class Main
 {
     public static void main(final String[] args)
     {
-        Board maze = new Board(100, 100);
+        Board maze = new Board(5, 5);
 
         JFrame obj = new JFrame();
         obj.setSize(768 + 15, 768 + 40);
