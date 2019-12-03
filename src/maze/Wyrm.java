@@ -9,8 +9,16 @@ import additional.Location;
 
 public class Wyrm
 {
+    // variables <3
+    static Stack<Path> paths_stack;
+    static Cell[][] maze;
+    Board board;
+
+
+
     public Wyrm(Board curr_board )
     {
+        board = curr_board;
         maze = curr_board.get_maze();
         paths_stack = new Stack<Path>();
     }
@@ -197,7 +205,7 @@ public class Wyrm
         while(check() != null)
         {
             Location curr_loc = check();
-            Path tempPath = new Path(id, maze, curr_loc);
+            Path tempPath = new Path(id, board, curr_loc);
             tempPath.create_path();
             add_path(tempPath);
             id++;
@@ -310,8 +318,6 @@ public class Wyrm
 
     /* Functions Needed For Cleaning_up end here */
 
-    // variables <3
-    static Stack<Path> paths_stack;
-    static Cell[][] maze;
+
 }
 

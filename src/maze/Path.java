@@ -10,11 +10,20 @@ import java.util.Stack;
 
 public class Path
 {
-    Path(int id, Cell[][] m, Location loc )
+    ArrayList<Location> path_cells;
+    Location initial_location;
+    Cell[][] maze;
+    Board board;
+    double ID; // for keeping track of the path and later on merging
+    Stack<Location> dead_end;
+
+
+    Path(int id, Board b, Location loc)
     {
+        board = b;
         path_cells = new ArrayList<Location>();
         ID = id;
-        maze = m;
+        maze = b.get_maze();
         initial_location = loc;
         dead_end = new Stack<Location>();
     }
@@ -55,6 +64,18 @@ public class Path
             Wyrm.wallify(curr_loc);
             Wyrm.wallify(curr_next_loc);
 
+            board.update();
+
+            try
+            {
+                Thread.sleep(5);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+
+
             if(is_dead_end(curr_loc))
             {
                 add_dead_end(curr_loc);
@@ -66,12 +87,14 @@ public class Path
             }
 
             curr_loc = curr_next_next_loc;
-
         }
     }
 
     public void merge(Path path)
     {
+        if(path == this)
+            return;
+
         ArrayList<Location> path_to_merge = path.get_path_cells();
         
         for(int i = 0; i < path_to_merge.size(); i++)
@@ -160,10 +183,4 @@ public class Path
         dead_end.push(location);
     }
 
-
-    ArrayList<Location> path_cells;
-    Location initial_location;
-    Cell[][] maze;
-    double ID; // for keeping track of the path and later on merging
-    Stack<Location> dead_end;
 }

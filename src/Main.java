@@ -8,10 +8,7 @@ public class Main
 {
     public static void main(final String[] args)
     {
-        Board maze = new Board(5, 5);
-        Wyrm modified_maze = new Wyrm(maze);
-        modified_maze.create_maze(100);
-        //maze.print();
+        Board maze = new Board(100, 100);
 
         JFrame obj = new JFrame();
         obj.setSize(768 + 15, 768 + 40);
@@ -21,5 +18,11 @@ public class Main
         obj.setVisible(true);
         obj.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         obj.add(maze);
+
+        Wyrm modified_maze = new Wyrm(maze);
+        modified_maze.create_maze(100);
+        //maze.print();
+
+
     }
 };

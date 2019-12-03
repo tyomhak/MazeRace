@@ -14,8 +14,18 @@ import javax.swing.*;
 
 public class Board extends JPanel implements State
 {
+    Cell[][] maze;
+
+    int mazeWidth;
+    int mazeHeight;
+
+    int winWidth = 768;
+    int winHeight = 768;
+    int cellSize;
 
     private static final long serialVersionUID = 1L;
+
+
 
     public Board(int width, int height)
     {
@@ -103,6 +113,9 @@ public class Board extends JPanel implements State
         Toolkit.getDefaultToolkit().sync();
     }
 
+    public void update() {
+        repaint();
+    }
     public void paintComponent(Graphics g) {
 //        g.setColor(Color.white);
 //        g.drawRect(0, 0, winWidth, winHeight);
@@ -117,17 +130,4 @@ public class Board extends JPanel implements State
     {
         return maze;
     }
-        
-    
-    Cell[][] maze;
-
-    int mazeWidth;
-    int mazeHeight;
-
-    int winWidth = 768;
-    int winHeight = 768;
-    int cellSize;
-
-
-
 }
