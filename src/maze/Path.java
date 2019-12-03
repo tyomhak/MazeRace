@@ -29,9 +29,11 @@ public class Path
             maze[curr_loc.get_row()][curr_loc.get_column()].set_path(this);
             // keeping track of all the cells in the path
             path_cells.add(curr_loc);
+
             Location curr_next_loc = Wyrm.getLocation(curr_loc);
             if(curr_next_loc == null)
             {
+                add_dead_end(curr_loc);
                 curr_loc = null;
                 continue;
             }
@@ -43,6 +45,7 @@ public class Path
             Location curr_next_next_loc = Wyrm.getLocation(curr_next_loc);
             if(curr_next_next_loc == null)
             {
+                add_dead_end(curr_next_loc);
                 curr_loc = null;
                 continue;
             }
@@ -51,13 +54,18 @@ public class Path
 
             Wyrm.wallify(curr_loc);
             Wyrm.wallify(curr_next_loc);
-            curr_loc = curr_next_next_loc;
 
+            if(is_dead_end(curr_loc))
+            {
+                add_dead_end(curr_loc);
+            }
 
             if(is_dead_end(curr_next_loc))
             {
-                dead_end.add(curr_next_loc);
+                add_dead_end(curr_next_loc);
             }
+
+            curr_loc = curr_next_next_loc;
 
         }
     }
@@ -68,6 +76,8 @@ public class Path
         
         for(int i = 0; i < path_to_merge.size(); i++)
         {
+        //     if(maze[path_to_merge.get(i).get_row()][path_to_merge.get(i).get_column()].get_path() == this)
+        //         continue;
             maze[path_to_merge.get(i).get_row()][path_to_merge.get(i).get_column()].set_path(this);
             path_cells.add(path_to_merge.get(i));
         }
@@ -75,7 +85,8 @@ public class Path
         Location temp = path.get_dead_end();
         while(temp != null)
         {
-            dead_end.push(temp);
+            if(is_dead_end(temp))
+                dead_end.push(temp);
             temp = path.get_dead_end();
         }
     }
@@ -96,35 +107,42 @@ public class Path
 
         // UP
         if(curr_row - 1 >= 0)
-            if(maze[curr_row - 1][curr_col].status == Cell_Status.WALL || maze[curr_row - 1][curr_col].status == Cell_Status.NOTHING)
+        {
+            if(maze[curr_row - 1][curr_col].status == Cell_Status.WALL || maze[curr_row - 1][curr_col].status == Cell_Status.NOTHING )
                 counter++;
+        }
         else
-            counter++; // for the cases when it is out of bonds we still consider a wall
-        
+            counter++; // for the cases when it is out of bonds we still consider a wall      
 
         // LEFT
         if(curr_col - 1 >= 0)
-            if(maze[curr_row][curr_col - 1].status == Cell_Status.WALL || maze[curr_row][curr_col - 1].status == Cell_Status.NOTHING)
+        {
+            if(maze[curr_row][curr_col - 1].status == Cell_Status.WALL || maze[curr_row][curr_col - 1].status == Cell_Status.NOTHING )
                 counter++;
+        }
         else
             counter++;
 
         // DOWN
         if(curr_row + 1 < maze.length)
+        {
             if(maze[curr_row + 1][curr_col].status == Cell_Status.WALL || maze[curr_row + 1][curr_col].status == Cell_Status.NOTHING ) 
                 counter++;
+        }
         else
             counter++;                
 
         // RIGHT
         if(curr_col + 1 < maze[curr_row].length)
-            if(maze[curr_row][curr_col + 1].status == Cell_Status.WALL || maze[curr_row ][curr_col + 1].status == Cell_Status.NOTHING)
+        {
+            if(maze[curr_row][curr_col + 1].status == Cell_Status.WALL || maze[curr_row ][curr_col + 1].status == Cell_Status.NOTHING )
                 counter++;
+        }
         else
             counter++;
 
 
-        if(counter > 2)
+        if(counter >= 3)
             return true;
 
         return false;

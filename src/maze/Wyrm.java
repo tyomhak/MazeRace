@@ -14,6 +14,59 @@ public class Wyrm
         maze = curr_board.get_maze();
         paths_stack = new Stack<Path>();
     }
+    
+    public void create_maze(int num)
+    {
+        //create_rooms(num);
+        carve();
+        cleanup(1);
+    }
+
+
+    /* Utility Functions */
+
+    static Location getLocation(Location curr_loc)
+    {
+        ArrayList<Location> temp_list = get_desired_cells(curr_loc, Cell_Status.NOTHING, null);
+        if( temp_list == null)
+            return null;
+        return get_rand_loc(temp_list);
+    }
+
+    static ArrayList<Location> get_desired_cells( Location curr_loc, Cell_Status cell_desired1, Cell_Status cell_desired2)
+    {
+        ArrayList<Location> list_of_cells = new ArrayList<Location>();
+        int curr_row = curr_loc.get_row();
+        int curr_col = curr_loc.get_column();
+
+        if(cell_desired2 == null)
+            cell_desired2 = cell_desired1;
+
+        // UP
+        if(curr_row - 1 >= 0)
+            if(maze[curr_row - 1][curr_col].status == cell_desired1 || maze[curr_row - 1][curr_col].status == cell_desired2)
+                list_of_cells.add(new Location(curr_row - 1, curr_col));
+
+        // LEFT
+        if(curr_col - 1 >= 0)
+            if(maze[curr_row][curr_col - 1].status == cell_desired1 || maze[curr_row][curr_col - 1].status == cell_desired2)
+                list_of_cells.add(new Location(curr_row, curr_col - 1));
+
+        // DOWN
+        if(curr_row + 1 < maze.length)
+            if(maze[curr_row + 1][curr_col].status == cell_desired1 || maze[curr_row + 1][curr_col].status == cell_desired2) 
+                list_of_cells.add(new Location(curr_row + 1, curr_col));
+
+        // RIGHT
+        if(curr_col + 1 < maze[curr_row].length)
+            if(maze[curr_row][curr_col + 1].status == cell_desired1 || maze[curr_row ][curr_col + 1].status == cell_desired2)
+                list_of_cells.add(new Location(curr_row, curr_col + 1));
+
+        if(list_of_cells.size() == 0)
+            return null;
+
+        return list_of_cells;
+    }
 
     static Location get_rand_loc(ArrayList<Location> possible_loc)
     {
@@ -22,137 +75,37 @@ public class Wyrm
         return possible_loc.get(rand.nextInt(possible_loc.size())); 
     }
 
-    static ArrayList<Location> get_accessible_Locations(Location curr_loc)
+    Path get_path()
     {
-        ArrayList<Location> actions = new ArrayList<Location>();
-        
-        int curr_row = curr_loc.get_row();
-        int curr_col = curr_loc.get_column();
-        Location new_loc = new Location(-1,-1);
-
-        // UP
-        if(curr_row - 1 >= 0 && maze[curr_row - 1][curr_col].status == Cell_Status.NOTHING )
-        {
-            new_loc.set_row(curr_row - 1);
-            new_loc.set_column(curr_col);
-            actions.add(new_loc);
-        }
-
-        new_loc = new Location(-1,-1);
-
-        // LEFT
-        if(curr_col - 1 >= 0 && maze[curr_row][curr_col - 1].status == Cell_Status.NOTHING )
-        {
-            new_loc.set_row(curr_row);
-            new_loc.set_column(curr_col - 1);
-            actions.add(new_loc);
-        }
-        new_loc = new Location(-1,-1);
-        
-        
-        // DOWN
-        if(curr_row + 1 < maze.length && maze[curr_row + 1][curr_col].status == Cell_Status.NOTHING )
-        {
-            new_loc.set_row(curr_row + 1);
-            new_loc.set_column(curr_col);
-            actions.add(new_loc);
-        }
-        new_loc = new Location(-1,-1);
-
-        // RIGHT
-        if(curr_col + 1 < maze[curr_row].length && maze[curr_row][curr_col + 1].status == Cell_Status.NOTHING )
-        {
-            new_loc.set_row(curr_row);
-            new_loc.set_column(curr_col + 1);
-            actions.add(new_loc);
-        }
-        new_loc = new Location(-1,-1);
-
-        return actions;
+        if(paths_stack.size() == 0)
+            return null;
+        return paths_stack.pop();
     }
 
-    // checks to see if there are any -1 left on the board so that we can fill them up with paths and walls
-    Location check()
+    void add_path(Path p)
     {
-        Location current_loc = new Location(-1,-1);
-        for(int i = 0; i < maze.length; i = i + 1)
-        {
-            for(int j = 0; j< maze[i].length; j = j + 1)
-            {
-                if(maze[i][j].status.value == -1)
-                {
-                    current_loc.set_row(i);
-                    current_loc.set_column(j);
-                    return current_loc;
-                }
-            }
-        }
-
-        if(current_loc.get_column() == -1 && current_loc.get_row() == -1)
-            return null;
-
-        return current_loc;
+        paths_stack.add(p);
     }
 
     // changes surrounding -1 into 0, means changes nothing into walls
     static void wallify(Location curr_loc)
     {
-        int curr_row = curr_loc.get_row();
-        int curr_col = curr_loc.get_column();
+        ArrayList<Location> nothing_cells = get_desired_cells(curr_loc, Cell_Status.NOTHING, null);
 
-        // UP
-        if(curr_row - 1 >= 0 && maze[curr_row - 1][curr_col].status == Cell_Status.NOTHING )
-            maze[curr_row - 1][curr_col].status = Cell_Status.WALL;
+        if(nothing_cells == null)
+            return;
 
-        // LEFT
-        if(curr_col - 1 >= 0 && maze[curr_row][curr_col - 1].status == Cell_Status.NOTHING )
-            maze[curr_row][curr_col -1].status = Cell_Status.WALL;
-        
-        // DOWN
-        if(curr_row + 1 < maze.length && maze[curr_row + 1][curr_col].status == Cell_Status.NOTHING )
-            maze[curr_row + 1][curr_col].status = Cell_Status.WALL;
-
-        // RIGHT
-        if(curr_col + 1 < maze[curr_row].length && maze[curr_row][curr_col + 1].status == Cell_Status.NOTHING )
-            maze[curr_row][curr_col + 1].status = Cell_Status.WALL;
-    }
-    
-    // loop through the matrix and fill everything up
-    public void carve()
-    {
-        // creating paths at locations where we find NOTHING(-1)
-        int id = 0;
-        while(check() != null)
+        for(int i = 0; i < nothing_cells.size(); i++)
         {
-            Location curr_loc = check();
-            Path tempPath = new Path(id, maze, curr_loc);
-            tempPath.create_path();
-            paths_stack.add(tempPath);
-            id++;
-        }    
-    }
-
-    // check to see if the room collides with other rooms
-    boolean collision_check(Location curr_loc, Room curr_room)
-    {   
-        int row = curr_loc.get_row();
-        int column = curr_loc.get_column();
-
-        int height = curr_room.height;
-        int width = curr_room.width;
-
-        for(int i = row; i < row + height; i = i + 1)
-        {
-            for(int j = column; j < column + width; j = j + 1 )
-            {
-                if(maze[i][j].status == Cell_Status.ROOM || maze[i][j].status == Cell_Status.WALL )
-                {
-                    return true;
-                }
-            }
+            maze[nothing_cells.get(i).get_row()][nothing_cells.get(i).get_column()].status = Cell_Status.WALL;
         }
-        return false;
     }
+
+    /* Utility Functions end here */
+
+
+
+    /* Functions Needed For Create_Rooms */
 
     public void create_rooms(int attempts)
     {   
@@ -208,228 +161,154 @@ public class Wyrm
         }
     }
 
-    boolean find_another_path(int curr_row, int curr_col, Path curr_path)
-    {
-        boolean check = false;
-        // UP
-        if(curr_row - 1 >= 0 && maze[curr_row - 1][curr_col].status == Cell_Status.PATH)
-        {
-            if(!(maze[curr_row - 1][curr_col].get_path() == curr_path))
-            {
-                curr_path.merge(maze[curr_row - 1][curr_col].get_path());
-                check = true;
-            }
-        }
+    // check to see if the room collides with other rooms
+    boolean collision_check(Location curr_loc, Room curr_room)
+    {   
+        int row = curr_loc.get_row();
+        int column = curr_loc.get_column();
 
-        // LEFT
-        if(curr_col - 1 >= 0 && maze[curr_row][curr_col - 1].status == Cell_Status.PATH )
+        int height = curr_room.height;
+        int width = curr_room.width;
+
+        for(int i = row; i < row + height; i = i + 1)
         {
-            if(!(maze[curr_row][curr_col - 1].get_path() == curr_path))
+            for(int j = column; j < column + width; j = j + 1 )
             {
-                curr_path.merge(maze[curr_row][curr_col - 1].get_path());
-                check = true;
+                if(maze[i][j].status == Cell_Status.ROOM || maze[i][j].status == Cell_Status.WALL )
+                {
+                    return true;
+                }
             }
         }
-        // DOWN
-        if(curr_row + 1 < maze.length && maze[curr_row + 1][curr_col].status == Cell_Status.PATH )
-        {
-            if(!(maze[curr_row + 1][curr_col].get_path() == curr_path))
-            {
-                curr_path.merge(maze[curr_row + 1][curr_col].get_path());
-                check = true;
-            }
-        }
-        // RIGHT
-        if(!(curr_col + 1 < maze[curr_row].length && maze[curr_row][curr_col + 1].status == Cell_Status.PATH ))
-        {
-            if(maze[curr_row][curr_col + 1].get_path() == curr_path)
-            { 
-                curr_path.merge(maze[curr_row][curr_col + 1].get_path());
-                check = true;
-            }
-        }
-        return check;       
+        return false;
     }
 
-    // merges paths if there are walls who have different paths near them else puts a -1 
-    void loopy_thingy(Location curr_loc )
+    /* Functions Needed For Creating_Rooms end here */
+
+
+
+    /* Functions Needed For Carving */
+
+    // loop through the matrix and fill everything up
+    public void carve()
     {
-        ArrayList<Location> wall_locations = get_desired_cells(curr_loc, Cell_Status.WALL, null);
-
-
-        int curr_row = curr_loc.get_row();
-        int curr_col = curr_loc.get_column();
-
-        if(wall_locations == null || wall_locations.size() == 0)
+        // creating paths at locations where we find NOTHING(-1)
+        int id = 0;
+        while(check() != null)
         {
-            Location new_dead_end = find_closest_path(curr_loc);
-            if(!(new_dead_end == null))
-                if(maze[curr_row][curr_col].get_path().is_dead_end(new_dead_end))
-                    maze[new_dead_end.get_row()][new_dead_end.get_column()].get_path().dead_end.push(new_dead_end);
-
-            maze[curr_row][curr_col].set_path(null);
-            maze[curr_row][curr_col].status = Cell_Status.WALL;
-
-            return;
-        }
-
-
-        for (int i = 0; i < wall_locations.size(); i++)
-        {
-            Location temp_loc = wall_locations.get(i);
-            maze[temp_loc.get_row()][temp_loc.get_column()].status = Cell_Status.PATH;
-            maze[temp_loc.get_row()][temp_loc.get_column()].set_path(maze[curr_row][curr_col].get_path());
-            maze[temp_loc.get_row()][temp_loc.get_column()].get_path().path_cells.add(temp_loc);
-        }
-
-        // // UP
-        // if(curr_row - 1 >= 0 && maze[curr_row - 1][curr_col].status == Cell_Status.WALL)
-        // {
-        //     if(find_another_path(curr_row - 1, curr_col, maze[curr_row][curr_col].get_path()))
-        //     {
-        //         check = true;
-        //         maze[curr_row - 1][curr_col].status = Cell_Status.PATH;
-        //         maze[curr_row - 1][curr_col].set_path(maze[curr_row][curr_col].get_path());
-        //         maze[curr_row - 1][curr_col].get_path().path_cells.add(new Location(curr_row - 1,curr_col));
-        //     }
-        // }
-
-        // // LEFT
-        // if(curr_col - 1 >= 0 && maze[curr_row][curr_col - 1].status == Cell_Status.WALL )
-        // {
-        //     if(find_another_path(curr_row, curr_col - 1, maze[curr_row][curr_col].get_path()))
-        //     {
-        //         check = true;
-        //         maze[curr_row][curr_col - 1].status = Cell_Status.PATH;
-        //         maze[curr_row][curr_col - 1].set_path(maze[curr_row][curr_col].get_path());
-        //         maze[curr_row][curr_col - 1].get_path().path_cells.add(new Location(curr_row,curr_col - 1));
-        //     }
-        // }
-        
-        
-        // // DOWN
-        // if(curr_row + 1 < maze.length && maze[curr_row + 1][curr_col].status == Cell_Status.WALL )
-        // {
-        //     if(find_another_path(curr_row + 1, curr_col, maze[curr_row][curr_col].get_path()))
-        //     { 
-        //         check = true;
-        //         maze[curr_row + 1][curr_col].status = Cell_Status.PATH;
-        //         maze[curr_row + 1][curr_col].set_path(maze[curr_row][curr_col].get_path());
-        //         maze[curr_row + 1][curr_col].get_path().path_cells.add(new Location(curr_row + 1,curr_col));
-        //     }
-        // }
-
-
-        // // RIGHT
-        // if(curr_col + 1 <= maze[curr_row].length && maze[curr_row][curr_col + 1].status == Cell_Status.WALL )
-        // {
-        //     if(find_another_path(curr_row, curr_col + 1, maze[curr_row][curr_col].get_path()))
-        //     {
-        //         check = true;
-        //         maze[curr_row][curr_col + 1].status = Cell_Status.PATH;
-        //         maze[curr_row][curr_col + 1].set_path(maze[curr_row][curr_col].get_path());
-        //         maze[curr_row][curr_col + 1].get_path().path_cells.add(new Location(curr_row,curr_col + 1));
-        //     }
-        // }
-
-
-        // if(!check)
-        // {
-        //     maze[curr_row][curr_col].set_path(null);
-        //     maze[curr_row][curr_col].status = Cell_Status.WALL;
-        //     Location new_dead_end = find_closest_path(curr_loc);
-        //     if((Path).is_dead_end(new_dead_end))
-        //     if(!(new_dead_end == null))
-        //         maze[new_dead_end.get_row()][new_dead_end.get_column()].get_path().dead_end.push(new_dead_end);
-        // }
- 
+            Location curr_loc = check();
+            Path tempPath = new Path(id, maze, curr_loc);
+            tempPath.create_path();
+            add_path(tempPath);
+            id++;
+        }    
     }
 
-    ArrayList<Location> get_desired_cells( Location curr_loc, Cell_Status cell_desired1, Cell_Status cell_desired2)
+    // checks to see if there are any -1 left on the board so that we can fill them up with paths and walls
+    Location check()
     {
-        ArrayList<Location> list_of_cells = new ArrayList<Location>();
-        int curr_row = curr_loc.get_row();
-        int curr_col = curr_loc.get_column();
+        Location current_loc = new Location(-1,-1);
+        for(int i = 0; i < maze.length; i = i + 1)
+        {
+            for(int j = 0; j< maze[i].length; j = j + 1)
+            {
+                if(maze[i][j].status.value == -1)
+                {
+                    current_loc.set_row(i);
+                    current_loc.set_column(j);
+                    return current_loc;
+                }
+            }
+        }
 
-        if(cell_desired2 == null)
-            cell_desired2 = cell_desired1;
-
-        // UP
-        if(curr_row - 1 >= 0)
-            if(maze[curr_row - 1][curr_col].status == cell_desired1 || maze[curr_row - 1][curr_col].status == cell_desired2)
-                list_of_cells.add(new Location(curr_row - 1, curr_col));
-
-        // LEFT
-        if(curr_col - 1 >= 0)
-            if(maze[curr_row][curr_col - 1].status == cell_desired1 || maze[curr_row][curr_col - 1].status == cell_desired2)
-                list_of_cells.add(new Location(curr_row, curr_col - 1));
-
-        // DOWN
-        if(curr_row + 1 < maze.length)
-            if(maze[curr_row + 1][curr_col].status == cell_desired1 || maze[curr_row + 1][curr_col].status == cell_desired2) 
-                list_of_cells.add(new Location(curr_row + 1, curr_col));
-
-        // RIGHT
-        if(curr_col + 1 < maze[curr_row].length)
-            if(maze[curr_row][curr_col + 1].status == cell_desired1 || maze[curr_row ][curr_col + 1].status == cell_desired2)
-                list_of_cells.add(new Location(curr_row, curr_col + 1));
-
-        if(list_of_cells.size() == 0)
+        if(current_loc.get_column() == -1 && current_loc.get_row() == -1)
             return null;
 
-        return list_of_cells;
+        return current_loc;
     }
 
-    Location find_closest_path(Location curr_loc)
-    {
-        ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+    /* Functions Needed For Carving end here */
+    
 
-        if(close_path.size() == 0)
-            return null;
-        else return close_path.get(0);
-    }
+    /* Functions Needed For Cleanup */
 
     // for every dead end it deletes some, and if it can connect paths it will.
     public void cleanup(int limit)       // on aisle 3!
     {
-        //int block_to_be_deleted = num_to_del;
-        
-        while(paths_stack.size() > 1)
+        Path temp_path = get_path();
+
+        while(temp_path != null)
         {
-            Path temp_path = paths_stack.pop();
             Location dead_end = temp_path.get_dead_end();
             int counter = 0;
-            while(dead_end != null && counter < limit)
+            while(dead_end != null &&  counter < limit)
             {
                 if(!temp_path.is_dead_end(dead_end))
                 {
                     dead_end = temp_path.get_dead_end();
                     continue;
                 }
-                loopy_thingy(dead_end);
-                counter++;
+
+                if(loopy_thingy(dead_end))
+                {
+                    counter++;
+                }
                 dead_end = temp_path.get_dead_end();
-            }           
+            }
+            if(temp_path.dead_end.size() != 0)
+                paths_stack.add(temp_path); 
+
+            temp_path = get_path();
+                      
         }
         System.out.println(paths_stack.size());
     } 
 
-    public void create_maze(int num)
+    // finds the closest path from nearest walls, checks to see if the path chosen is the same path or not
+    Location find_closest_path(Location curr_loc, Path from_which_path)
     {
-        //create_rooms(num);
-        carve();
-        cleanup(1);
+        ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+
+        for(int i = 0; i < close_path.size(); ++i)
+        {
+            if(maze[close_path.get(i).get_row()][close_path.get(i).get_column()].get_path() == from_which_path)
+                close_path.remove(i);
+        }
+
+        if(close_path.size() <= 1)
+            return null;
+
+        else return close_path.get(0);
     }
 
-    static Location getLocation(Location curr_loc)
+
+    // merges paths if there are walls who have different paths near them else puts a -1 
+    boolean loopy_thingy(Location curr_loc )
     {
-        ArrayList<Location> temp_list = new ArrayList<Location>();
-        temp_list = get_accessible_Locations(curr_loc);
-        if(temp_list.size() == 0)
-            return null;
-        return get_rand_loc(temp_list);
+        ArrayList<Location> wall_locations = get_desired_cells(curr_loc, Cell_Status.WALL, null);
+
+        int curr_col = curr_loc.get_column();
+        int curr_row = curr_loc.get_row();
+
+        //for (int i = 0; i < wall_locations.size(); i++)
+        //{
+            Location temp_loc = wall_locations.get(0);
+
+            Location new_path = find_closest_path(temp_loc, maze[curr_row][curr_col].get_path());
+            if(new_path == null)
+                return false;
+
+            maze[temp_loc.get_row()][temp_loc.get_column()].status = Cell_Status.PATH;
+            maze[temp_loc.get_row()][temp_loc.get_column()].set_path(maze[curr_row][curr_col].get_path());
+            maze[temp_loc.get_row()][temp_loc.get_column()].get_path().path_cells.add(temp_loc);
+
+            maze[curr_row][curr_col].get_path().merge(maze[new_path.get_row()][new_path.get_column()].get_path());
+
+        //}
+            return true;
     }
-    
+
+    /* Functions Needed For Cleaning_up end here */
 
     // variables <3
     static Stack<Path> paths_stack;

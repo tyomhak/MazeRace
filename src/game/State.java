@@ -10,4 +10,3 @@ public interface State
     Set<Action> getApplicableActions(Location location);
     State getActionResult(Action action);
 }
-

@@ -26,9 +26,9 @@ public class Board extends JPanel implements State
         cellSize = Math.min(winWidth / maze.length, winHeight/ maze[0].length);
 
         // initializing the board with null and nothings
-        for(int i = 0; i < maze.length; i = i + 1)
+        for(int i = 0; i < maze.length; i++)
         {
-            for(int j = 0; j< maze[i].length; j = j + 1)
+            for(int j = 0; j< maze[i].length; j++)
             {
                 maze[i][j] = new Cell(null);
             }
@@ -62,9 +62,9 @@ public class Board extends JPanel implements State
 
     public void print()
     {
-        for(int i = 0; i < maze.length; i = i + 1)
+        for(int i = 0; i < maze.length; i++)
         {
-            for(int j = 0; j< maze[i].length; j = j + 1)
+            for(int j = 0; j< maze[i].length; j++)
             {
                 System.out.print(maze[i][j].status.value + "  ");
             }
