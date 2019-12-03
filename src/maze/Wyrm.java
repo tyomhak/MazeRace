@@ -273,20 +273,22 @@ public class Wyrm
     } 
 
     // finds the closest path from nearest walls, checks to see if the path chosen is the same path or not
-    Location find_closest_path(Location curr_loc, Path from_which_path)
+    ArrayList<Location> find_closest_path(Location curr_loc, Path from_which_path)
     {
         ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH, null);
 
         for(int i = 0; i < close_path.size(); ++i)
         {
             if(maze[close_path.get(i).get_row()][close_path.get(i).get_column()].get_path() == from_which_path)
+            {
                 close_path.remove(i);
+                i--;
+            }
         }
-
-        if(close_path.size() < 1)
+        if(close_path.size() == 0)
             return null;
 
-        else return close_path.get(0);
+        else return close_path;
     }
 
 
@@ -298,31 +300,50 @@ public class Wyrm
         int curr_col = curr_loc.get_column();
         int curr_row = curr_loc.get_row();
 
-        //for (int i = 0; i < wall_locations.size(); i++)
-        //{
-            Location temp_loc = wall_locations.get(0);
+        Path curr_path = maze[curr_row][curr_col].get_path();
 
-            Location new_path = find_closest_path(temp_loc, maze[curr_row][curr_col].get_path());
-            if(new_path == null)
-                return false;
 
-            Cell wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
-            Cell new_path_cell = maze[new_path.get_row()][new_path.get_column()];
+        Location temp_loc = wall_locations.get(0);
+        ArrayList<Location> all_paths = find_closest_path(temp_loc, curr_path);
 
-            wall_cell.status = Cell_Status.PATH;
-            wall_cell.set_path(maze[curr_row][curr_col].get_path());
-            wall_cell.get_path().path_cells.add(temp_loc);
+        if(all_paths == null)
+            return false;
 
-            if(wall_cell.get_path().path_cells.size() > new_path_cell.get_path().path_cells.size() )
+        // looping through every possibility to see if there is a one where the wall has only 1 path nearby 
+        for (int i = 1; i < wall_locations.size(); i++)
+        {
+            ArrayList<Location> temp_all_paths = find_closest_path(wall_locations.get(i), curr_path);
+            if(temp_all_paths == null)
+                continue;
+            if(all_paths.size() > temp_all_paths.size())
             {
-                wall_cell.get_Path().merge(new_path_cell.get_path());
+                temp_loc = wall_locations.get(i);
+                all_paths = temp_all_paths;
             }
-            else
-            {
-                new_path_cell.get_Path().merge(wall_cell.get_path());
-            }
+        }   
 
-        //}
+        Location new_path = all_paths.get(0);
+
+        
+        if(new_path == null)
+            return false;
+
+        Cell wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
+        Cell new_path_cell = maze[new_path.get_row()][new_path.get_column()];
+
+        wall_cell.status = Cell_Status.PATH;
+        wall_cell.set_path(maze[curr_row][curr_col].get_path());
+        wall_cell.get_path().path_cells.add(temp_loc);
+
+        if(wall_cell.get_path().path_cells.size() > new_path_cell.get_path().path_cells.size() )
+        {
+            wall_cell.get_path().merge(new_path_cell.get_path());
+        }
+        else
+        {
+            new_path_cell.get_path().merge(wall_cell.get_path());
+        }
+
             return true;
     }
 

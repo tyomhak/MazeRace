@@ -16,7 +16,7 @@ public class Room
         int max_width = maze_width   / scale;     // setting the max limit for the width
 
         // randomly selecting a number in between min and maximum width/height
-        width = get_random(2, max_width);
+        width = get_random(2, max_height );
         height = get_random(2, max_width );
 
     }
