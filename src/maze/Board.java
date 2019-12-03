@@ -105,7 +105,7 @@ public class Board extends JPanel implements State
                 {
                     g.setColor(Color.BLACK);
                 }
-                g.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
+                g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
             }
 
         }
