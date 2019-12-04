@@ -24,7 +24,7 @@ public class Room
     {
         board = b;
         room_cells = new ArrayList<Location>();
-        Cell[][] maze = board.get_maze();
+        maze = b.get_maze();
 
         belongs_to_path = null;
         int maze_width = maze[0].length;
@@ -94,6 +94,8 @@ public class Room
                     room_cells.add(new Location(i, j));
                 }
             }
+            update_cell_room();
+
 
             // looping through the boundaries to wallify them
             // Left wall and Right Wall
