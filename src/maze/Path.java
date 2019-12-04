@@ -2,6 +2,7 @@ package maze;
 
 import additional.Cell_Status;
 import additional.Location;
+import additional.Utils;
 
 import java.util.ArrayList;
 //import java.util.Stack;
@@ -66,14 +67,7 @@ public class Path
 
             board.update();
 
-            try
-            {
-                Thread.sleep(5);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+            Utils.wait(5);
 
 
             if(is_dead_end(curr_loc))

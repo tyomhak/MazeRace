@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import additional.Cell_Status;
 import additional.Location;
+import additional.Utils;
 
 public class Wyrm
 {
@@ -44,7 +45,11 @@ public class Wyrm
 //        }
 
         carve();
+        merge_rooms_paths();
         cleanup(1);
+//        merge_rooms_paths();
+
+        board.update();
     }
 
 
@@ -56,6 +61,12 @@ public class Wyrm
         if( temp_list == null)
             return null;
         return get_rand_loc(temp_list);
+    }
+
+
+    static ArrayList<Location> get_desired_cells( Location curr_loc, Cell_Status cell_desired1)
+    {
+        return get_desired_cells(curr_loc, cell_desired1, null);
     }
 
     static ArrayList<Location> get_desired_cells( Location curr_loc, Cell_Status cell_desired1, Cell_Status cell_desired2)
@@ -133,7 +144,7 @@ public class Wyrm
     /* Functions Needed For Create_Rooms */
 
     public void create_rooms(int attempts)
-    {   
+    {
         for(int k = 0; k < attempts; ++k)
         {
             Room new_room = new Room(board);
@@ -158,7 +169,7 @@ public class Wyrm
                     {
                         maze[i][j].status = Cell_Status.ROOM;
                         maze[i][j].visited = true;
-                        new_room.path_cells.add(new Location(i, j));
+                        new_room.room_cells.add(new Location(i, j));
                     }
                 }
                 new_room.ID = k;
@@ -212,6 +223,81 @@ public class Wyrm
         return false;
     }
 
+    public void merge_rooms_paths()
+    {
+        for(int m = 0; m < rooms_stack.size(); ++m)
+        {
+            board.update();
+            Utils.wait(30);
+
+            Room tempRoom = rooms_stack.get(m);
+            if(tempRoom.get_path() != null)
+                continue;
+
+            ArrayList<Location> borderCells = new ArrayList<Location>();
+
+            for(int i = 0; i < tempRoom.room_cells.size(); ++i)
+            {
+                ArrayList<Location> walls = get_desired_cells(tempRoom.room_cells.get(i), Cell_Status.WALL);
+                if(walls == null)
+                    continue;
+
+                for(int j = 0; j < walls.size(); ++j)
+                {
+                    borderCells.add(walls.get(j));
+                }
+
+                System.out.println("245");
+            }
+
+
+            while (!borderCells.isEmpty())
+            {
+                System.out.println("251");
+
+                int randIndex = Utils.get_random(0, borderCells.size() - 1);
+
+                ArrayList<Location> walls = get_desired_cells(borderCells.get(randIndex), Cell_Status.WALL);
+                if(walls == null)
+                {
+                    borderCells.remove(randIndex);
+                    continue;
+                }
+
+                if(walls.size() > 0)
+                {
+                    ArrayList<Location> path = get_desired_cells(walls.get(0), Cell_Status.PATH);
+                    if(path == null)
+                    {
+                        borderCells.remove(randIndex);
+                        continue;
+                    }
+
+                    if (path.size() > 0)
+                    {
+                        Cell door = maze[walls.get(0).get_row()][walls.get(0).get_column()];
+                        Cell doorEntrance = maze[path.get(0).get_row()][path.get(0).get_column()];
+
+                        Path overtakingPath = doorEntrance.get_path();
+
+
+                        door.set_path(overtakingPath);
+                        door.status = doorEntrance.status;
+                        tempRoom.set_path(overtakingPath);
+
+                        for(int i = 0; i < tempRoom.room_cells.size(); ++i)
+                        {
+                            overtakingPath.path_cells.add(tempRoom.room_cells.get(i));
+                        }
+
+
+                        break;
+                    }
+                }
+                borderCells.remove(randIndex);
+            }
+        }
+    }
     /* Functions Needed For Creating_Rooms end here */
 
 

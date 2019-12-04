@@ -1,5 +1,6 @@
 package maze;
 
+import additional.Cell_Status;
 import additional.Location;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.Random;
 
 public class Room
 {
-    ArrayList<Location> path_cells;
+    ArrayList<Location> room_cells;
     double ID;
     int width;
     int height;
@@ -20,7 +21,7 @@ public class Room
     public Room(Board b)
     {
         board = b;
-        path_cells = new ArrayList<Location>();
+        room_cells = new ArrayList<Location>();
         Cell[][] maze = board.get_maze();
 
         belongs_to_path = null;
@@ -32,8 +33,8 @@ public class Room
         int max_width = maze_width   / scale;     // setting the max limit for the width
 
         // randomly selecting a number in between min and maximum width/height
-        width = get_random(1, max_height );
-        height = get_random(1, max_width );
+        width = get_random(3, max_height );
+        height = get_random(3, max_width );
 
     }
 
@@ -46,10 +47,10 @@ public class Room
     public void update_cell_room()
     {
         /* Update RoomCells.belongs_to_room */
-        if(path_cells.size() > 0) {
+        if(room_cells.size() > 0) {
             Cell[][] tempMaze = board.get_maze();
-            for (int i = 0; i < path_cells.size(); ++i) {
-                Location temp = path_cells.get(i);
+            for (int i = 0; i < room_cells.size(); ++i) {
+                Location temp = room_cells.get(i);
                 tempMaze[temp.get_row()][temp.get_column()].set_room(this);
             }
         }
@@ -60,11 +61,13 @@ public class Room
         belongs_to_path = path;
 
         /* Update RoomCells.belongs_to_path */
-        if(path_cells.size() > 0) {
+        if(room_cells.size() > 0) {
             Cell[][] tempMaze = board.get_maze();
-            for (int i = 0; i < path_cells.size(); ++i) {
-                Location temp = path_cells.get(i);
+            for (int i = 0; i < room_cells.size(); ++i) {
+                Location temp = room_cells.get(i);
                 tempMaze[temp.get_row()][temp.get_column()].set_path(belongs_to_path);
+                tempMaze[temp.get_row()][temp.get_column()].status = Cell_Status.PATH;
+
             }
         }
     }
