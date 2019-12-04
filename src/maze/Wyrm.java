@@ -142,8 +142,8 @@ public class Wyrm
 
             int max_height = maze.length - room_height;
             int max_width = maze[0].length - room_width;
-            int row = new_room.get_random(1, max_height - 1);
-            int col = new_room.get_random(1, max_width - 1);
+            int row = new_room.get_random(2, max_height - 1);
+            int col = new_room.get_random(2, max_width - 1);
             Location curr_room_loc = new Location(row, col);
             if( collision_check(curr_room_loc, new_room))
             {
@@ -270,7 +270,7 @@ public class Wyrm
         {
             Location dead_end = temp_path.get_dead_end();
             int counter = 0;
-            while(dead_end != null &&  counter < limit)
+            while(dead_end != null /*&&  counter < limit */)
             {
                 if(!temp_path.is_dead_end(dead_end))
                 {
@@ -290,13 +290,15 @@ public class Wyrm
             temp_path = get_path();
                       
         }
-        System.out.println(paths_stack.size());
     } 
 
     // finds the closest path from nearest walls, checks to see if the path chosen is the same path or not
     ArrayList<Location> find_closest_path(Location curr_loc, Path from_which_path)
     {
         ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+
+        if(close_path == null)
+            return null;
 
         for(int i = 0; i < close_path.size(); ++i)
         {
@@ -306,17 +308,18 @@ public class Wyrm
                 i--;
             }
         }
+
         if(close_path.size() == 0)
             return null;
 
-        else return close_path;
+            return close_path;
     }
 
 
     // merges paths if there are walls who have different paths near them else puts a -1 
     boolean loopy_thingy(Location curr_loc )
     {
-        ArrayList<Location> wall_locations = get_desired_cells(curr_loc, Cell_Status.WALL, null);
+        ArrayList<Location> wall_locations = get_desired_cells(curr_loc, Cell_Status.WALL, Cell_Status.NOTHING);
 
         int curr_col = curr_loc.get_column();
         int curr_row = curr_loc.get_row();
@@ -327,8 +330,24 @@ public class Wyrm
         Location temp_loc = wall_locations.get(0);
         ArrayList<Location> all_paths = find_closest_path(temp_loc, curr_path);
 
+
+        Cell wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
+
         if(all_paths == null)
+        {
+            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+
+            if(!(new_dead_ends == null))
+            {
+                Location new_dead_end = new_dead_ends.get(0);
+                maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
+            }
+
+            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
+            maze[curr_row][curr_col].set_path(null);
+            board.update();
             return false;
+        }
 
         // looping through every possibility to see if there is a one where the wall has only 1 path nearby 
         for (int i = 1; i < wall_locations.size(); i++)
@@ -343,18 +362,33 @@ public class Wyrm
             }
         }   
 
+        if(all_paths == null)
+        {
+            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+
+            if(!(new_dead_ends == null))
+            {
+                Location new_dead_end = new_dead_ends.get(0);
+                maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
+            }
+
+            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
+            maze[curr_row][curr_col].set_path(null);
+            board.update();
+            return false;
+        }
+
         Location new_path = all_paths.get(0);
 
-        
-        if(new_path == null)
-            return false;
 
-        Cell wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
+        wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
         Cell new_path_cell = maze[new_path.get_row()][new_path.get_column()];
 
         wall_cell.status = Cell_Status.PATH;
         wall_cell.set_path(maze[curr_row][curr_col].get_path());
         wall_cell.get_path().path_cells.add(temp_loc);
+
+        board.update();
 
         if(wall_cell.get_path().path_cells.size() > new_path_cell.get_path().path_cells.size() )
         {
