@@ -20,7 +20,7 @@ public class Main
         obj.add(maze);
 
         Wyrm modified_maze = new Wyrm(maze);
-        modified_maze.create_maze(50);
+        modified_maze.create_maze(100);
         maze.print();
         maze.update();
 

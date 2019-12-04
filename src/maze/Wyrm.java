@@ -123,6 +123,18 @@ public class Wyrm
         paths_stack.add(p);
     }
 
+    Path get_room()
+    {
+        if(rooms_stack.size() == 0)
+            return null;
+        return paths_stack.pop();
+    }
+
+    void add_room(Room p)
+    {
+        rooms_stack.add(p);
+    }
+
     // changes surrounding -1 into 0, means changes nothing into walls
     static void wallify(Location curr_loc)
     {
@@ -147,7 +159,7 @@ public class Wyrm
     {
         for(int k = 0; k < attempts; ++k)
         {
-            Room new_room = new Room(board);
+            Room new_room = new Room(board, k);
             int room_height = new_room.height;
             int room_width = new_room.width;
 
@@ -429,9 +441,11 @@ public class Wyrm
                 maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
             }
 
-            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
+            maze[curr_row][curr_col].status = Cell_Status.WALL;
             maze[curr_row][curr_col].set_path(null);
+
             board.update();
+            Utils.wait(15);
             return false;
         }
 
@@ -448,6 +462,7 @@ public class Wyrm
             }
         }   
 
+/* START COMMENT */
         if(all_paths == null)
         {
             ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
@@ -463,6 +478,8 @@ public class Wyrm
             board.update();
             return false;
         }
+/* END COMMENT */
+
 
         Location new_path = all_paths.get(0);
 

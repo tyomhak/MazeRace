@@ -93,8 +93,6 @@ public class Path
         
         for(int i = 0; i < path_to_merge.size(); i++)
         {
-        //     if(maze[path_to_merge.get(i).get_row()][path_to_merge.get(i).get_column()].get_path() == this)
-        //         continue;
             maze[path_to_merge.get(i).get_row()][path_to_merge.get(i).get_column()].set_path(this);
             path_cells.add(path_to_merge.get(i));
         }
