@@ -10,7 +10,8 @@ import additional.Location;
 public class Wyrm
 {
     // variables <3
-    static Stack<Path> paths_stack;
+    Stack<Path> paths_stack;
+    Stack<Room> rooms_stack;
     static Cell[][] maze;
     Board board;
 
@@ -21,11 +22,27 @@ public class Wyrm
         board = curr_board;
         maze = curr_board.get_maze();
         paths_stack = new Stack<Path>();
+        rooms_stack = new Stack<Room>();
     }
     
     public void create_maze(int num)
     {
-        //create_rooms(num);
+        create_rooms(num);
+
+//        // CHECK for uniqueness of rooms IDs
+//        for(int i = 0; i < rooms_stack.size() - 1; ++i)
+//        {
+//            for(int j = i + 1; j < rooms_stack.size(); ++j)
+//            {
+//                if(rooms_stack.get(i).ID == rooms_stack.get(j).ID) {
+//                    Room temp1 = rooms_stack.get(i);
+//                    Room temp2 = rooms_stack.get(j);
+//                    System.out.println("ID NOT UNIQUE");
+//
+//                }
+//            }
+//        }
+
         carve();
         cleanup(1);
     }
@@ -117,9 +134,9 @@ public class Wyrm
 
     public void create_rooms(int attempts)
     {   
-        for(int i = 0; i < attempts; i = i + 1)
+        for(int k = 0; k < attempts; ++k)
         {
-            Room new_room = new Room(maze);
+            Room new_room = new Room(board);
             int room_height = new_room.height;
             int room_width = new_room.width;
 
@@ -135,18 +152,22 @@ public class Wyrm
             else
             {
                 // looping everything and setting ROOMS
-                for( i = row; i < row + room_height; i++)
+                for( int i = row; i < row + room_height; i++)
                 {
                     for(int j = col; j < col + room_width; j++)
                     {
                         maze[i][j].status = Cell_Status.ROOM;
                         maze[i][j].visited = true;
+                        new_room.path_cells.add(new Location(i, j));
                     }
                 }
+                new_room.ID = k;
+                new_room.update_cell_room();
+                rooms_stack.push(new_room);
 
                 // looping through the boundaries to wallify them
                 // Left wall and Right Wall
-                for( i = row - 1; i < row + room_height + 1; i++)
+                for(int i = row - 1; i < row + room_height + 1; i++)
                 {
                     if( i > maze.length || i < 0)
                         continue;
@@ -156,7 +177,7 @@ public class Wyrm
                 }
 
                 // Upper wall and Bottom Wall
-                for( i = col -1; i < col + room_width + 1; i++)
+                for(int i = col -1; i < col + room_width + 1; i++)
                 {
                     if(i > maze[0].length || i < 0)
                         continue;

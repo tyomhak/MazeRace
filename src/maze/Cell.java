@@ -5,6 +5,14 @@ import additional.*;
 
 public class Cell
 {
+
+    private Path belongs_to_path;
+    private Room belongs_to_room;
+    public Cell_Status status;
+    public Boolean visited;
+    private Item object;
+
+
     public Cell( Item obj )
     {
         belongs_to_path = null;
@@ -25,19 +33,10 @@ public class Cell
         object = obj;
     }
 
-    public void set_path(Path path)
-    {
-        belongs_to_path = path;
-    }
+    public void set_path(Path path) { belongs_to_path = path; }
+    public Path get_path(){ return belongs_to_path; }
 
-    public Path get_path()
-    {
-        return belongs_to_path;
-    }
-
-    private Path belongs_to_path;
-    public Cell_Status status;
-    public Boolean visited;
-    private Item object;
+    public void set_room(Room room){ belongs_to_room = room; }
+    public Room get_room(){ return belongs_to_room; }
 }
 
