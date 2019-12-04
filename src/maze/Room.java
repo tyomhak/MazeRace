@@ -1,5 +1,6 @@
 package maze;
 
+import additional.Cell_Status;
 import additional.Location;
 
 import java.util.ArrayList;
@@ -11,29 +12,36 @@ public class Room
 {
     ArrayList<Location> path_cells;
     double ID;
+    Location initialLocation;
     int width;
     int height;
     private Path belongs_to_path;
     Board board;
+    Cell[][] maze;
 
 
-    public Room(Board b)
+    public Room(Board b, double id)
     {
         board = b;
         path_cells = new ArrayList<Location>();
-        Cell[][] maze = board.get_maze();
+        maze = board.get_maze();
 
         belongs_to_path = null;
         int maze_width = maze[0].length;
         int maze_height = maze.length;
         int scale = 3;
+        ID = id;
 
         int max_height = maze_height / scale;   // setting the max limit for the height
         int max_width = maze_width   / scale;     // setting the max limit for the width
 
         // randomly selecting a number in between min and maximum width/height
-        width = get_random(1, max_height );
-        height = get_random(1, max_width );
+        width = get_random(2, max_height );
+        height = get_random(2, max_width );
+               
+        int row = get_random(1, maze_height - max_height - 1);
+        int col = get_random(1, maze_width - max_width - 1);
+        initialLocation = new Location(row,col);
 
     }
 
@@ -42,6 +50,75 @@ public class Room
 		Random rand = new Random();
 		return rand.nextInt((max - min) + 1) + min;
 	}
+
+    // check to see if the room collides with other rooms
+    boolean collision_check(Location curr_loc)
+    {   
+        int row = curr_loc.get_row();
+        int column = curr_loc.get_column();
+
+
+        for(int i = row; i < row + height; i = i + 1)
+        {
+            for(int j = column; j < column + width; j = j + 1 )
+            {
+                if(maze[i][j].status == Cell_Status.ROOM || maze[i][j].status == Cell_Status.WALL )
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void create_room()
+    {
+        Cell[][] maze = board.get_maze();
+
+        int row = initialLocation.get_row();
+        int col = initialLocation.get_column();
+
+        if( collision_check(initialLocation) )
+        {
+            return;
+        }
+        else
+        {
+            // looping everything and setting ROOMS
+            for( int i = row; i < row + height; i++)
+            {
+                for(int j = col; j < col + width; j++)
+                {
+                    maze[i][j].status = Cell_Status.ROOM;
+                    maze[i][j].visited = true;
+                    path_cells.add(new Location(i, j));
+                }
+            }
+
+            // looping through the boundaries to wallify them
+            // Left wall and Right Wall
+            for(int i = row - 1; i < row + height + 1; i++)
+            {
+                if( i > maze.length || i < 0)
+                    continue;
+                if(col - 1 > -1)
+                    maze[i][col - 1].status = Cell_Status.WALL;
+                maze[i][col + width].status = Cell_Status.WALL;
+            }
+
+            // Upper wall and Bottom Wall
+            for(int i = col -1; i < col + width + 1; i++)
+            {
+                if(i > maze[0].length || i < 0)
+                    continue;
+
+                if(row - 1 > -1)
+                    maze[row - 1][i].status = Cell_Status.WALL;
+                maze[row + height][i].status = Cell_Status.WALL;
+            }
+        }
+    }
+
 
     public void update_cell_room()
     {

@@ -112,6 +112,18 @@ public class Wyrm
         paths_stack.add(p);
     }
 
+    Path get_room()
+    {
+        if(rooms_stack.size() == 0)
+            return null;
+        return paths_stack.pop();
+    }
+
+    void add_room(Room p)
+    {
+        rooms_stack.add(p);
+    }
+
     // changes surrounding -1 into 0, means changes nothing into walls
     static void wallify(Location curr_loc)
     {
@@ -134,83 +146,19 @@ public class Wyrm
 
     public void create_rooms(int attempts)
     {   
-        for(int k = 0; k < attempts; ++k)
+        int id = 0;
+        int counter = 0;
+        while(counter <= attempts)
         {
-            Room new_room = new Room(board);
-            int room_height = new_room.height;
-            int room_width = new_room.width;
-
-            int max_height = maze.length - room_height;
-            int max_width = maze[0].length - room_width;
-            int row = new_room.get_random(2, max_height - 1);
-            int col = new_room.get_random(2, max_width - 1);
-            Location curr_room_loc = new Location(row, col);
-            if( collision_check(curr_room_loc, new_room))
-            {
-                continue;
-            }
-            else
-            {
-                // looping everything and setting ROOMS
-                for( int i = row; i < row + room_height; i++)
-                {
-                    for(int j = col; j < col + room_width; j++)
-                    {
-                        maze[i][j].status = Cell_Status.ROOM;
-                        maze[i][j].visited = true;
-                        new_room.path_cells.add(new Location(i, j));
-                    }
-                }
-                new_room.ID = k;
-                new_room.update_cell_room();
-                rooms_stack.push(new_room);
-
-                // looping through the boundaries to wallify them
-                // Left wall and Right Wall
-                for(int i = row - 1; i < row + room_height + 1; i++)
-                {
-                    if( i > maze.length || i < 0)
-                        continue;
-                    if(col - 1 > -1)
-                        maze[i][col - 1].status = Cell_Status.WALL;
-                    maze[i][col + room_width].status = Cell_Status.WALL;
-                }
-
-                // Upper wall and Bottom Wall
-                for(int i = col -1; i < col + room_width + 1; i++)
-                {
-                    if(i > maze[0].length || i < 0)
-                        continue;
-
-                    if(row - 1 > -1)
-                        maze[row - 1][i].status = Cell_Status.WALL;
-                    maze[row + room_height][i].status = Cell_Status.WALL;
-                }
-            }
-        }
+            Room tempRoom = new Room(board, id);
+            tempRoom.create_room();
+            add_room(tempRoom);
+            id++;
+            counter++;
+        }   
     }
 
-    // check to see if the room collides with other rooms
-    boolean collision_check(Location curr_loc, Room curr_room)
-    {   
-        int row = curr_loc.get_row();
-        int column = curr_loc.get_column();
 
-        int height = curr_room.height;
-        int width = curr_room.width;
-
-        for(int i = row; i < row + height; i = i + 1)
-        {
-            for(int j = column; j < column + width; j = j + 1 )
-            {
-                if(maze[i][j].status == Cell_Status.ROOM || maze[i][j].status == Cell_Status.WALL )
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     /* Functions Needed For Creating_Rooms end here */
 
@@ -343,9 +291,19 @@ public class Wyrm
                 maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
             }
 
-            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
+            maze[curr_row][curr_col].status = Cell_Status.WALL;
             maze[curr_row][curr_col].set_path(null);
+
             board.update();
+            try
+            {
+                Thread.sleep(15);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+
             return false;
         }
 
@@ -362,21 +320,21 @@ public class Wyrm
             }
         }   
 
-        if(all_paths == null)
-        {
-            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+        // if(all_paths == null)
+        // {
+        //     ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
 
-            if(!(new_dead_ends == null))
-            {
-                Location new_dead_end = new_dead_ends.get(0);
-                maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
-            }
+        //     if(!(new_dead_ends == null))
+        //     {
+        //         Location new_dead_end = new_dead_ends.get(0);
+        //         maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
+        //     }
 
-            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
-            maze[curr_row][curr_col].set_path(null);
-            board.update();
-            return false;
-        }
+        //     maze[curr_row][curr_col].status = Cell_Status.NOTHING;
+        //     maze[curr_row][curr_col].set_path(null);
+        //     board.update();
+        //     return false;
+        // }
 
         Location new_path = all_paths.get(0);
 
