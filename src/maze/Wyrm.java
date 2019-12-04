@@ -45,8 +45,12 @@ public class Wyrm
 //        }
 
         carve();
+
         merge_rooms_paths();
         cleanup(1);
+        merge_rooms_paths();
+        cleanup(1);
+
 //        merge_rooms_paths();
 
         board.update();
@@ -218,7 +222,7 @@ public class Wyrm
                         continue;
                     }
 
-                    if (path.size() > 0)
+                    if (path.size() == 1)
                     {
                         Cell door = maze[walls.get(0).get_row()][walls.get(0).get_column()];
                         Cell doorEntrance = maze[path.get(0).get_row()][path.get(0).get_column()];
@@ -395,23 +399,23 @@ public class Wyrm
             }
         }   
 
-///* START COMMENT */
-//        if(all_paths == null)
-//        {
-//            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
-//
-//            if(!(new_dead_ends == null))
-//            {
-//                Location new_dead_end = new_dead_ends.get(0);
-//                maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
-//            }
-//
-//            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
-//            maze[curr_row][curr_col].set_path(null);
-//            board.update();
-//            return false;
-//        }
-///* END COMMENT */
+/* START COMMENT */
+        if(all_paths == null)
+        {
+            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+
+            if(!(new_dead_ends == null))
+            {
+                Location new_dead_end = new_dead_ends.get(0);
+                maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
+            }
+
+            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
+            maze[curr_row][curr_col].set_path(null);
+            board.update();
+            return false;
+        }
+/* END COMMENT */
 
 
         Location new_path = all_paths.get(0);
