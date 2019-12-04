@@ -48,8 +48,8 @@ public class Wyrm
 
         merge_rooms_paths();
         cleanup(1);
-        merge_rooms_paths();
-        cleanup(1);
+        //merge_rooms_paths();
+        //cleanup(1);
 
 //        merge_rooms_paths();
 
@@ -196,13 +196,13 @@ public class Wyrm
                     borderCells.add(walls.get(j));
                 }
 
-                System.out.println("245");
+                //System.out.println("245");
             }
 
 
             while (!borderCells.isEmpty())
             {
-                System.out.println("251");
+                //System.out.println("251");
 
                 int randIndex = Utils.get_random(0, borderCells.size() - 1);
 
@@ -335,6 +335,7 @@ public class Wyrm
         if(close_path == null)
             return null;
 
+        // filters the paths tha tare the same
         for(int i = 0; i < close_path.size(); ++i)
         {
             if(maze[close_path.get(i).get_row()][close_path.get(i).get_column()].get_path() == from_which_path)
@@ -354,7 +355,7 @@ public class Wyrm
     // merges paths if there are walls who have different paths near them else puts a -1 
     boolean loopy_thingy(Location curr_loc )
     {
-        ArrayList<Location> wall_locations = get_desired_cells(curr_loc, Cell_Status.WALL, Cell_Status.NOTHING);
+        ArrayList<Location> wall_locations = get_desired_cells(curr_loc, Cell_Status.WALL);
 
         int curr_col = curr_loc.get_column();
         int curr_row = curr_loc.get_row();
@@ -362,57 +363,65 @@ public class Wyrm
         Path curr_path = maze[curr_row][curr_col].get_path();
 
 
-        Location temp_loc = wall_locations.get(0);
-        ArrayList<Location> all_paths = find_closest_path(temp_loc, curr_path);
-
-
-        Cell wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
-
-        if(all_paths == null)
-        {
-            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
-
-            if(!(new_dead_ends == null))
-            {
-                Location new_dead_end = new_dead_ends.get(0);
-                maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
-            }
-
-            maze[curr_row][curr_col].status = Cell_Status.WALL;
-            maze[curr_row][curr_col].set_path(null);
-
-            board.update();
-            Utils.wait(15);
-            return false;
-        }
+        Location temp_loc = null;
+        ArrayList<Location> all_paths = null;
+        Cell wall_cell = null;
+        int size = Integer.MAX_VALUE;
 
         // looping through every possibility to see if there is a one where the wall has only 1 path nearby 
-        for (int i = 1; i < wall_locations.size(); i++)
+        for (int i = 0; i < wall_locations.size(); i++)
         {
             ArrayList<Location> temp_all_paths = find_closest_path(wall_locations.get(i), curr_path);
+
             if(temp_all_paths == null)
-                continue;
-            if(all_paths.size() > temp_all_paths.size())
             {
+                continue;
+                // ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH);
+    
+                // if(!(new_dead_ends == null))
+                // {
+                //     Location new_dead_end = new_dead_ends.get(0);
+                //     if(maze[curr_row][curr_col].get_path().is_dead_end(new_dead_end))
+                //         maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
+                // }
+    
+                // maze[curr_row][curr_col].status = Cell_Status.WALL;
+                // maze[curr_row][curr_col].set_path(null);
+    
+                // board.update();
+                // Utils.wait(15);
+                // return false;
+            }
+
+                if(size >= temp_all_paths.size())
+            {
+                size = temp_all_paths.size();
+
                 temp_loc = wall_locations.get(i);
+                wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
                 all_paths = temp_all_paths;
             }
         }   
 
 /* START COMMENT */
-        if(all_paths == null)
+        if( size >= 2 || temp_loc == null || all_paths == null || wall_cell == null)
         {
             ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+
+            maze[curr_row][curr_col].status = Cell_Status.WALL;
+
 
             if(!(new_dead_ends == null))
             {
                 Location new_dead_end = new_dead_ends.get(0);
-                maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
+                if(maze[curr_row][curr_col].get_path().is_dead_end(new_dead_end))
+                    maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
             }
 
-            maze[curr_row][curr_col].status = Cell_Status.NOTHING;
             maze[curr_row][curr_col].set_path(null);
+
             board.update();
+            Utils.wait(15);
             return false;
         }
 /* END COMMENT */
@@ -430,13 +439,18 @@ public class Wyrm
 
         board.update();
 
-        if(wall_cell.get_path().path_cells.size() > new_path_cell.get_path().path_cells.size() )
-        {
+        // if(wall_cell.get_path().path_cells.size() >= new_path_cell.get_path().path_cells.size() )
+        // {
             wall_cell.get_path().merge(new_path_cell.get_path());
-        }
-        else
+        // }
+        // else
+        // {
+        //     new_path_cell.get_path().merge(wall_cell.get_path());
+        // }
+
+        if(maze[curr_row][curr_col].get_path().is_dead_end(curr_loc))
         {
-            new_path_cell.get_path().merge(wall_cell.get_path());
+            maze[curr_row][curr_col].get_path().add_dead_end(curr_loc);
         }
 
             return true;
