@@ -3,7 +3,9 @@ package maze;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.Stack;
 
 
 import javax.swing.JPanel;
@@ -13,6 +15,8 @@ import additional.Location;
 
 import game.State;
 import game.Action;
+import game.game_additional.Item;
+import game.player.Player;
 
 public class Board extends JPanel implements State
 {
@@ -23,7 +27,9 @@ public class Board extends JPanel implements State
 
     int winWidth = 768;
     int winHeight = 768;
-    int cellSize;
+    public int cellSize;
+    ArrayList<Player> players;
+    ArrayList<Item> items;
 
     private static final long serialVersionUID = 1L;
 
@@ -34,6 +40,8 @@ public class Board extends JPanel implements State
         maze = new Cell[width][height];
         mazeWidth = width;
         mazeHeight = height;
+        players = new ArrayList<Player>();
+        items = new ArrayList<Item>();
 
         cellSize = Math.min(winWidth / maze.length, winHeight/ maze[0].length);
 
@@ -126,10 +134,30 @@ public class Board extends JPanel implements State
 //        g.fillRect(0, 0, winWidth, winHeight);
 
         drawMaze(g);
+
+        for(int i = 0; i < players.size(); ++i)
+        {
+            players.get(i).draw(g, this);
+        }
+
+        for(int i = 0; i < items.size(); ++i)
+        {
+            items.get(i).draw(g, this);
+        }
     }
 
     public Cell[][] get_maze()
     {
         return maze;
+    }
+
+    public void addPlayer(Player p)
+    {
+        players.add(p);
+    }
+
+    public void addItem(Item i)
+    {
+        items.add(i);
     }
 }

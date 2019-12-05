@@ -1,4 +1,7 @@
 //import game.*;
+import game.game_additional.Exit;
+import game.game_additional.Item;
+import game.player.Player;
 import maze.*;
 
 import javax.swing.*;
@@ -23,6 +26,17 @@ public class Main
         modified_maze.create_maze(100);
         //maze.print();
         maze.update();
+
+        Player player1 = new Player(modified_maze.getRandRoomCell());
+        maze.addPlayer(player1);
+
+        Item exit = new Exit(modified_maze.getRandRoomCell());
+        maze.addItem(exit);
+
+        maze.update();
+
+
+
 
     }
 };

@@ -4,13 +4,17 @@ import game.game;
 import additional.Location;
 import game.player.Player;
 
+import java.awt.*;
+
 public class Exit extends Item 
 {
 
-    Exit(Location loc)
+    public Exit(Location loc)
     {
         Weight = 0;
-        current_loc = loc; 
+        current_loc = loc;
+
+        myColor = Color.RED;
     }
     
     void use(Player player)

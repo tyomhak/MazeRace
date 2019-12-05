@@ -257,6 +257,18 @@ public class Wyrm
 
         }
     }
+
+    public Location getRandRoomCell()
+    {
+        int randRoomNumb = Utils.get_random(0, rooms_stack.size() - 1);
+        Room randRoom = rooms_stack.get(randRoomNumb);
+
+        int randCellNumb = Utils.get_random(0, randRoom.room_cells.size());
+        Location randCell = randRoom.room_cells.get(randCellNumb);
+
+        return randCell;
+    }
+
     /* Functions Needed For Creating_Rooms end here */
 
 

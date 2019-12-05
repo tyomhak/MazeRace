@@ -3,6 +3,10 @@ package game.player;
 import additional.DIRECTION;
 import additional.Location;
 import game.game_additional.Item;
+import maze.Board;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 public class Player
@@ -14,8 +18,9 @@ public class Player
     Integer     attack;         // damage inflicted on other players
     Boolean     alive;          // to be or not to be 
 
+    Color myColor;
 
-    Player(Location loc)
+    public Player(Location loc)
     {
         current_loc = loc;
         has_item = null;
@@ -23,6 +28,8 @@ public class Player
         hit_points = 100;
         attack = 0;
         alive = true;
+
+        myColor = Color.GREEN;
     }   
 
     void move(DIRECTION dir)
@@ -75,6 +82,12 @@ public class Player
     {
         //if(Item.class == exit)
         //to be implemented;
+    }
+
+    public void draw(Graphics g, Board board)
+    {
+        g.setColor(myColor);
+        g.fillRect(current_loc.get_column() * board.cellSize, current_loc.get_row() * board.cellSize,  board.cellSize, board.cellSize);
     }
 
 };
