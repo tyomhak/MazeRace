@@ -1,8 +1,10 @@
 package game;
 
-import additional.Location;
+import game.Action;
 
 import java.util.Set;
+
+import additional.Location;
 
 public interface State
 {

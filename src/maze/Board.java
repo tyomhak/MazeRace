@@ -1,16 +1,18 @@
 package maze;
 
-//import java.util.LinkedHashSet;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.util.Set;
 
-//import additional.*;
+
+import javax.swing.JPanel;
+
 import additional.Cell_Status;
 import additional.Location;
-import game.*;
-import game.Action;
 
-import javax.swing.*;
+import game.State;
+import game.Action;
 
 public class Board extends JPanel implements State
 {

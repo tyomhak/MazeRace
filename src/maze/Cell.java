@@ -1,7 +1,10 @@
 package maze;
 
 import additional.*;
-//import game.*;
+
+
+import game.game_additional.*;
+
 
 public class Cell
 {
