@@ -72,7 +72,7 @@ public class Room
         return false;
     }
 
-    public void create_room()
+    public boolean create_room()
     {
         Cell[][] maze = board.get_maze();
 
@@ -81,7 +81,7 @@ public class Room
 
         if( collision_check(initialLocation) )
         {
-            return;
+            return false;
         }
         else
         {
@@ -121,6 +121,7 @@ public class Room
 
             }
         }
+        return true;
     }
 
 

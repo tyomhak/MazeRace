@@ -8,10 +8,10 @@ public class Main
 {
     public static void main(final String[] args)
     {
-        Board maze = new Board(100, 100);
+        Board maze = new Board(60, 60);
 
         JFrame obj = new JFrame();
-        obj.setSize(768 + 15, 768 + 40);
+        obj.setSize(768 + 50, 768 + 50);
 //        obj.setBounds(0, 0, windowWidth, windowHeight);
         obj.setBackground(Color.GRAY);
         obj.setResizable(true);

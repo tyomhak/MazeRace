@@ -173,8 +173,9 @@ public class Wyrm
         while(counter <= attempts)
         {
             Room tempRoom = new Room(board, counter);
-            tempRoom.create_room();
-            add_room(tempRoom);
+            if(tempRoom.create_room())
+                add_room(tempRoom);
+
             counter++;
         }
     }
