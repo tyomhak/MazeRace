@@ -29,18 +29,12 @@ public class Wyrm
     public void create_maze(int num)
     {
         create_rooms(num);
-
         carve();
-//
         merge_rooms_paths();
         cleanup(num);
         last_cleaup(num);
-        merge_rooms_paths();
-        //cleanup(1);
-
-//        merge_rooms_paths();
-
         board.update();
+        System.out.println("DONE!");
     }
 
 
@@ -186,7 +180,7 @@ public class Wyrm
         for(int m = 0; m < rooms_stack.size(); ++m)
         {
             board.update();
-            Utils.wait(30);
+            Utils.wait(15);
 
             Room tempRoom = rooms_stack.get(m);
             if(tempRoom.get_path() != null)
@@ -312,7 +306,7 @@ public class Wyrm
             int counter = 0;
             while(dead_end != null /*&&  counter < limit */)
             {
-                if(!temp_path.is_dead_end(dead_end))
+                if(!temp_path.is_dead_end(dead_end)  )
                 {
                     dead_end = temp_path.get_dead_end();
                     continue;
@@ -381,27 +375,11 @@ public class Wyrm
             if(temp_all_paths == null)
             {
                 continue;
-                // ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH);
-    
-                // if(!(new_dead_ends == null))
-                // {
-                //     Location new_dead_end = new_dead_ends.get(0);
-                //     if(maze[curr_row][curr_col].get_path().is_dead_end(new_dead_end))
-                //         maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
-                // }
-    
-                // maze[curr_row][curr_col].status = Cell_Status.WALL;
-                // maze[curr_row][curr_col].set_path(null);
-    
-                // board.update();
-                // Utils.wait(15);
-                // return false;
             }
 
                 if(size >= temp_all_paths.size())
             {
                 size = temp_all_paths.size();
-
                 temp_loc = wall_locations.get(i);
                 wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
                 all_paths = temp_all_paths;
@@ -411,22 +389,27 @@ public class Wyrm
 /* START COMMENT */
         if( size >= 2 || temp_loc == null || all_paths == null || wall_cell == null)
         {
-            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH);
 
             maze[curr_row][curr_col].status = Cell_Status.WALL;
 
 
             if(!(new_dead_ends == null))
             {
-                Location new_dead_end = new_dead_ends.get(0);
-                if(maze[curr_row][curr_col].get_path().is_dead_end(new_dead_end))
-                    maze[curr_row][curr_col].get_path().add_dead_end(new_dead_end);
+                for(int i = 0; i < new_dead_ends.size(); ++i)
+                {
+                    Location new_dead_end = new_dead_ends.get(i);
+                    if(maze[curr_row][curr_col].get_path().is_dead_end(new_dead_end))
+                        maze[curr_row][curr_col].get_path().add_dead_end(new Location(new_dead_end.get_row(), new_dead_end.get_column()));
+                }
             }
 
-            maze[curr_row][curr_col].set_path(null);
+            maze[curr_row][curr_col].get_path().remove_path_cell(curr_loc);
+            maze[curr_row][curr_col].get_path().dead_end.remove(curr_loc);
+
 
             board.update();
-            Utils.wait(15);
+            Utils.wait(5);
             return false;
         }
 /* END COMMENT */
@@ -434,24 +417,23 @@ public class Wyrm
 
         Location new_path = all_paths.get(0);
 
-
-        wall_cell = maze[temp_loc.get_row()][temp_loc.get_column()];
         Cell new_path_cell = maze[new_path.get_row()][new_path.get_column()];
 
-        wall_cell.status = Cell_Status.PATH;
-        wall_cell.set_path(maze[curr_row][curr_col].get_path());
-        wall_cell.get_path().path_cells.add(temp_loc);
+        maze[temp_loc.get_row()][temp_loc.get_column()].status = Cell_Status.PATH;
+        maze[temp_loc.get_row()][temp_loc.get_column()].set_path(maze[curr_row][curr_col].get_path()); 
+        maze[temp_loc.get_row()][temp_loc.get_column()].get_path().path_cells.add(temp_loc);
+
 
         board.update();
 
-        // if(wall_cell.get_path().path_cells.size() >= new_path_cell.get_path().path_cells.size() )
-        // {
-            wall_cell.get_path().merge(new_path_cell.get_path());
-        // }
-        // else
-        // {
-        //     new_path_cell.get_path().merge(wall_cell.get_path());
-        // }
+        if(maze[temp_loc.get_row()][temp_loc.get_column()].get_path().path_cells.size() >= new_path_cell.get_path().path_cells.size() )
+        {
+            maze[temp_loc.get_row()][temp_loc.get_column()].get_path().merge(new_path_cell.get_path());
+        }
+        else
+        {
+            new_path_cell.get_path().merge(maze[temp_loc.get_row()][temp_loc.get_column()].get_path());
+        }
 
         if(maze[curr_row][curr_col].get_path().is_dead_end(curr_loc))
         {

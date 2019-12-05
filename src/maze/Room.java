@@ -63,6 +63,10 @@ public class Room
         {
             for(int j = column; j < column + width; j = j + 1 )
             {
+                if(i > maze.length - 1)
+                    return true;
+                if( j > maze[i].length - 1)
+                    return true;
                 if(maze[i][j].status == Cell_Status.ROOM || maze[i][j].status == Cell_Status.WALL )
                 {
                     return true;
