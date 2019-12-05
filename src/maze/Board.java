@@ -99,7 +99,7 @@ public class Board extends JPanel implements State
                 }
                 else if(maze[i][j].status == Cell_Status.ROOM)
                 {
-                    g.setColor(Color.pink);
+                    g.setColor(Color.ORANGE);
                 }
                 else
                 {

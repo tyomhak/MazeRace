@@ -47,8 +47,9 @@ public class Wyrm
         carve();
 
         merge_rooms_paths();
-        cleanup(1);
-        //merge_rooms_paths();
+        cleanup(num);
+        last_cleaup(num);
+        merge_rooms_paths();
         //cleanup(1);
 
 //        merge_rooms_paths();
@@ -56,6 +57,28 @@ public class Wyrm
         board.update();
     }
 
+
+    void last_cleaup(int num)
+    {
+        // very dum function
+        // loops through all the cells in the matrix and checks if there are any paths left that have dead ends
+        
+        for(int i = 0; i < maze.length; ++i)
+        {
+            for(int j = 0; j < maze[i].length; j++)
+            {
+                if(maze[i][j].status != Cell_Status.PATH )
+                    continue;
+                
+                if(maze[i][j].get_path().is_dead_end(new Location(i,j)))
+                {
+                    maze[i][j].get_path().add_dead_end(new Location(i,j));
+                    paths_stack.push(maze[i][j].get_path());
+                }
+            }
+        }
+        cleanup(num);
+    }
 
     /* Utility Functions */
 
@@ -188,7 +211,7 @@ public class Wyrm
             for(int i = 0; i < tempRoom.room_cells.size(); ++i)
             {
                 ArrayList<Location> walls = get_desired_cells(tempRoom.room_cells.get(i), Cell_Status.WALL);
-                if(walls == null)
+                if(walls == null)  
                     continue;
 
                 for(int j = 0; j < walls.size(); ++j)
@@ -204,7 +227,7 @@ public class Wyrm
             {
                 //System.out.println("251");
 
-                int randIndex = Utils.get_random(0, borderCells.size() - 1);
+                int randIndex = Utils.get_random(1, borderCells.size() - 1);
 
                 ArrayList<Location> walls = get_desired_cells(borderCells.get(randIndex), Cell_Status.WALL);
                 if(walls == null)
@@ -330,7 +353,7 @@ public class Wyrm
     // finds the closest path from nearest walls, checks to see if the path chosen is the same path or not
     ArrayList<Location> find_closest_path(Location curr_loc, Path from_which_path)
     {
-        ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+        ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH, Cell_Status.ROOM);
 
         if(close_path == null)
             return null;
