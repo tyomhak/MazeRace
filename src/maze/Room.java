@@ -59,11 +59,11 @@ public class Room
         int column = curr_loc.get_column();
 
 
-        for(int i = row; i < row + height; i = i + 1)
+        for(int i = row; i < row + height; ++i)
         {
-            for(int j = column; j < column + width; j = j + 1 )
+            for(int j = column; j < column + width; ++j)
             {
-                if(maze[i][j].status == Cell_Status.ROOM || maze[i][j].status == Cell_Status.WALL )
+                if(i > maze.length - 1 || j > maze[0].length - 1 || maze[i][j].status == Cell_Status.ROOM || maze[i][j].status == Cell_Status.WALL )
                 {
                     return true;
                 }

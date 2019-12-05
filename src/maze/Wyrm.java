@@ -35,7 +35,7 @@ public class Wyrm
         merge_rooms_paths();
         cleanup(num);
         last_cleaup(num);
-        merge_rooms_paths();
+        //merge_rooms_paths();
         //cleanup(1);
 
 //        merge_rooms_paths();
@@ -183,73 +183,78 @@ public class Wyrm
 
     public void merge_rooms_paths()
     {
-        for(int m = 0; m < rooms_stack.size(); ++m)
-        {
-            board.update();
-            Utils.wait(30);
+        int maxTries = 2;
+        int roomsMerged = 0;
 
-            Room tempRoom = rooms_stack.get(m);
-            if(tempRoom.get_path() != null)
-                continue;
+        for(int tries = 0; tries < maxTries; ++tries) {
+            if(roomsMerged > rooms_stack.size() - 1)
+                tries = maxTries;
 
-            ArrayList<Location> borderCells = new ArrayList<Location>();
+            for (int m = 0; m < rooms_stack.size(); ++m) {
+                board.update();
+                Utils.wait(30);
 
-            for(int i = 0; i < tempRoom.room_cells.size(); ++i)
-            {
-                ArrayList<Location> walls = get_desired_cells(tempRoom.room_cells.get(i), Cell_Status.WALL);
-                if(walls == null)  
+                if(roomsMerged == rooms_stack.size())
+                    return;
+
+                Room tempRoom = rooms_stack.get(m);
+                if (tempRoom.get_path() != null)
                     continue;
 
-                for(int j = 0; j < walls.size(); ++j)
-                {
-                    borderCells.add(walls.get(j));
-                }
-
-            }
+                ArrayList<Location> borderCells = new ArrayList<Location>();
 
 
-            while (borderCells.size() > 0)
-            {
-                int randIndex = Utils.get_random(0, borderCells.size() - 1);
+                for (int i = 0; i < tempRoom.room_cells.size(); ++i) {
+                    ArrayList<Location> walls = get_desired_cells(tempRoom.room_cells.get(i), Cell_Status.WALL);
+                    if (walls == null)
+                        continue;
 
-                Location potentialDoor = borderCells.get(randIndex);
-
-                ArrayList<Location> pathsNextDoor = get_desired_cells(potentialDoor, Cell_Status.PATH);
-                if(pathsNextDoor == null)
-                {
-                    borderCells.remove(randIndex);
-                    continue;
-                }
-
-                if (pathsNextDoor.size() > 0)
-                {
-                    Cell door = maze[potentialDoor.get_row()][potentialDoor.get_column()];
-                    Cell doorEntrance = maze[pathsNextDoor.get(0).get_row()][pathsNextDoor.get(0).get_column()];
-
-                    Path overtakingPath = doorEntrance.get_path();
-
-                    /* Remove entrance from dead end */
-                    if(overtakingPath.is_dead_end(pathsNextDoor.get(0)))
-                    {
-                        overtakingPath.dead_end.remove(pathsNextDoor.get(0));
+                    for (int j = 0; j < walls.size(); ++j) {
+                        borderCells.add(walls.get(j));
                     }
 
-                    door.set_path(overtakingPath);
-                    door.status = doorEntrance.status;
-                    tempRoom.set_path(overtakingPath);
-
-                    for(int i = 0; i < tempRoom.room_cells.size(); ++i)
-                    {
-                        overtakingPath.path_cells.add(tempRoom.room_cells.get(i));
-                    }
-                    overtakingPath.path_cells.add(borderCells.get(randIndex));
-
-
-                    break;
                 }
+
+
+                while (borderCells.size() > 0) {
+                    int randIndex = Utils.get_random(0, borderCells.size() - 1);
+
+                    Location potentialDoor = borderCells.get(randIndex);
+
+                    ArrayList<Location> pathsNextDoor = get_desired_cells(potentialDoor, Cell_Status.PATH);
+                    if (pathsNextDoor == null) {
+                        borderCells.remove(randIndex);
+                        continue;
+                    }
+
+                    if (pathsNextDoor.size() > 0) {
+                        Cell door = maze[potentialDoor.get_row()][potentialDoor.get_column()];
+                        Cell doorEntrance = maze[pathsNextDoor.get(0).get_row()][pathsNextDoor.get(0).get_column()];
+
+                        Path overtakingPath = doorEntrance.get_path();
+
+                        /* Remove entrance from dead end */
+                        if (overtakingPath.is_dead_end(pathsNextDoor.get(0))) {
+                            overtakingPath.dead_end.remove(pathsNextDoor.get(0));
+                        }
+
+                        door.set_path(overtakingPath);
+                        door.status = doorEntrance.status;
+                        tempRoom.set_path(overtakingPath);
+
+                        for (int i = 0; i < tempRoom.room_cells.size(); ++i) {
+                            overtakingPath.path_cells.add(tempRoom.room_cells.get(i));
+                        }
+                        overtakingPath.path_cells.add(borderCells.get(randIndex));
+                        ++roomsMerged;
+                        break;
+                    }
 
 //                borderCells.remove(randIndex);
+                }
             }
+
+
         }
     }
     /* Functions Needed For Creating_Rooms end here */
@@ -411,7 +416,7 @@ public class Wyrm
 /* START COMMENT */
         if( size >= 2 || temp_loc == null || all_paths == null || wall_cell == null)
         {
-            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH, null);
+            ArrayList<Location> new_dead_ends = get_desired_cells(curr_loc, Cell_Status.PATH);
 
             maze[curr_row][curr_col].status = Cell_Status.WALL;
 
@@ -426,7 +431,7 @@ public class Wyrm
             maze[curr_row][curr_col].set_path(null);
 
             board.update();
-            Utils.wait(15);
+//            Utils.wait(15);
             return false;
         }
 /* END COMMENT */
