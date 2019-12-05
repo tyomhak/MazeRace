@@ -61,6 +61,8 @@ public class Path
             }
             maze[curr_next_next_loc.get_row()][curr_next_next_loc.get_column()].visited = true;
             maze[curr_next_next_loc.get_row()][curr_next_next_loc.get_column()].status = Cell_Status.PATH;
+            maze[curr_next_next_loc.get_row()][curr_next_next_loc.get_column()].set_path(this);
+
 
             Wyrm.wallify(curr_loc);
             Wyrm.wallify(curr_next_loc);
@@ -101,9 +103,18 @@ public class Path
         while(temp != null)
         {
             if(is_dead_end(temp))
+            {
+                maze[temp.get_row()][temp.get_column()].set_path(this);
                 dead_end.push(temp);
+            }
+
             temp = path.get_dead_end();
         }
+    }
+
+    void remove_path_cell(Location cell_loc)
+    {
+        path_cells.remove(cell_loc);
     }
 
     ArrayList<Location> get_path_cells()
