@@ -2,6 +2,7 @@ package maze;
 
 import additional.Cell_Status;
 import additional.Location;
+import additional.Utils;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -96,7 +97,6 @@ public class Room
             }
             update_cell_room();
 
-
             // looping through the boundaries to wallify them
             // Left wall and Right Wall
             for(int i = row - 1; i < row + height + 1; i++)
@@ -117,6 +117,8 @@ public class Room
                 if(row - 1 > -1)
                     maze[row - 1][i].status = Cell_Status.WALL;
                 maze[row + height][i].status = Cell_Status.WALL;
+
+
             }
         }
     }

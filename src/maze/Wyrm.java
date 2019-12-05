@@ -30,22 +30,8 @@ public class Wyrm
     {
         create_rooms(num);
 
-//        // CHECK for uniqueness of rooms IDs
-//        for(int i = 0; i < rooms_stack.size() - 1; ++i)
-//        {
-//            for(int j = i + 1; j < rooms_stack.size(); ++j)
-//            {
-//                if(rooms_stack.get(i).ID == rooms_stack.get(j).ID) {
-//                    Room temp1 = rooms_stack.get(i);
-//                    Room temp2 = rooms_stack.get(j);
-//                    System.out.println("ID NOT UNIQUE");
-//
-//                }
-//            }
-//        }
-
         carve();
-
+//
         merge_rooms_paths();
         cleanup(num);
         last_cleaup(num);
@@ -219,54 +205,50 @@ public class Wyrm
                     borderCells.add(walls.get(j));
                 }
 
-                //System.out.println("245");
             }
 
 
-            while (!borderCells.isEmpty())
+            while (borderCells.size() > 0)
             {
-                //System.out.println("251");
+                int randIndex = Utils.get_random(0, borderCells.size() - 1);
 
-                int randIndex = Utils.get_random(1, borderCells.size() - 1);
+                Location potentialDoor = borderCells.get(randIndex);
 
-                ArrayList<Location> walls = get_desired_cells(borderCells.get(randIndex), Cell_Status.WALL);
-                if(walls == null)
+                ArrayList<Location> pathsNextDoor = get_desired_cells(potentialDoor, Cell_Status.PATH);
+                if(pathsNextDoor == null)
                 {
                     borderCells.remove(randIndex);
                     continue;
                 }
 
-                if(walls.size() > 0)
+                if (pathsNextDoor.size() > 0)
                 {
-                    ArrayList<Location> path = get_desired_cells(walls.get(0), Cell_Status.PATH);
-                    if(path == null)
+                    Cell door = maze[potentialDoor.get_row()][potentialDoor.get_column()];
+                    Cell doorEntrance = maze[pathsNextDoor.get(0).get_row()][pathsNextDoor.get(0).get_column()];
+
+                    Path overtakingPath = doorEntrance.get_path();
+
+                    /* Remove entrance from dead end */
+                    if(overtakingPath.is_dead_end(pathsNextDoor.get(0)))
                     {
-                        borderCells.remove(randIndex);
-                        continue;
+                        overtakingPath.dead_end.remove(pathsNextDoor.get(0));
                     }
 
-                    if (path.size() == 1)
+                    door.set_path(overtakingPath);
+                    door.status = doorEntrance.status;
+                    tempRoom.set_path(overtakingPath);
+
+                    for(int i = 0; i < tempRoom.room_cells.size(); ++i)
                     {
-                        Cell door = maze[walls.get(0).get_row()][walls.get(0).get_column()];
-                        Cell doorEntrance = maze[path.get(0).get_row()][path.get(0).get_column()];
-
-                        Path overtakingPath = doorEntrance.get_path();
-
-
-                        door.set_path(overtakingPath);
-                        door.status = doorEntrance.status;
-                        tempRoom.set_path(overtakingPath);
-
-                        for(int i = 0; i < tempRoom.room_cells.size(); ++i)
-                        {
-                            overtakingPath.path_cells.add(tempRoom.room_cells.get(i));
-                        }
-
-
-                        break;
+                        overtakingPath.path_cells.add(tempRoom.room_cells.get(i));
                     }
+                    overtakingPath.path_cells.add(borderCells.get(randIndex));
+
+
+                    break;
                 }
-                borderCells.remove(randIndex);
+
+//                borderCells.remove(randIndex);
             }
         }
     }
@@ -353,7 +335,7 @@ public class Wyrm
     // finds the closest path from nearest walls, checks to see if the path chosen is the same path or not
     ArrayList<Location> find_closest_path(Location curr_loc, Path from_which_path)
     {
-        ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH, Cell_Status.ROOM);
+        ArrayList<Location> close_path = get_desired_cells(curr_loc, Cell_Status.PATH); // , Cell_Status.ROOM
 
         if(close_path == null)
             return null;
