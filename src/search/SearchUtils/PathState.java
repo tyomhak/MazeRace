@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class PathState implements State {
     public Set<Location> visitedLocations;
-    public static Location currentLocation = null;
+    public Location currentLocation = null;
 
     public PathState(Location startLocation) {
         this.visitedLocations = Collections.emptySet();

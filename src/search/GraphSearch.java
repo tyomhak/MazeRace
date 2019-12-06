@@ -1,6 +1,13 @@
 package search;
 
+import additional.Cell_Status;
+import additional.Location;
+import additional.Utils;
+import maze.Board;
+import maze.Cell;
+import maze.Wyrm;
 import search.*;
+import search.SearchUtils.PathState;
 import search.frontier.*;
 
 import java.util.ArrayList;
@@ -22,6 +29,7 @@ public class GraphSearch implements Search
         {
             nodes_generated++;
             Node node = frontier.remove_node();
+
             // adding to the list of states we have been in
             explored.add(node.state);
 
@@ -34,13 +42,26 @@ public class GraphSearch implements Search
                 
             else
             {
+
                 for(Action action : node.state.getApplicableActions())
                 {
                     State newState = node.state.getActionResult(action);
-                    // checking if we have been in the state, just pass it by, 
-                    if(!explored.contains(newState))
+                    PathState temp = (PathState)newState;
+
+
+                    Cell[][] maze = Wyrm.getMaze();
+                    Location tempLoc = temp.get_current_Location();
+                    maze[tempLoc.get_row()][tempLoc.get_column()].status = Cell_Status.TEST;
+                    Board b = Wyrm.getBoard();
+                    b.update();
+//                    Utils.wait(1);
+
+
+                    frontier.add_node(new Node(node, action, newState, node.depth + 1, 0));
+
+                    // checking if we have been in the state, just pass it by,
+                    if(!explored.contains(temp))
                     {
-                        frontier.add_node(new Node(node, action, newState, node.depth + 1, 0));
                     }
                 }
             }

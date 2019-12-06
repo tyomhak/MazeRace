@@ -14,6 +14,7 @@ import search.SearchUtils.PathGoalTest;
 import search.SearchUtils.PathState;
 import search.State;
 import search.frontier.BreadthFirstFrontier;
+import search.frontier.DepthFirstFrontier;
 import search.frontier.Frontier;
 
 import javax.swing.*;
@@ -36,7 +37,7 @@ public class game
 
     public void start_game()
     {
-        Board maze = new Board(40, 40);
+        Board maze = new Board(200, 200);
 
         JFrame obj = new JFrame();
         obj.setSize(768 + 50, 768 + 50);
@@ -58,18 +59,18 @@ public class game
         Item exit = new Exit(modified_maze.getRandRoomCell(), maze);
         maze.addItem(exit);
 
-        Frontier ourFrontier = new BreadthFirstFrontier();
+        Frontier ourFrontier = new DepthFirstFrontier();//BreadthFirstFrontier();
         GraphSearch graphSearch = new GraphSearch(ourFrontier);
 
 
         Node solution = graphSearch.findStrategy(player1.get_state(), new PathGoalTest(exit.current_loc));
+        if(solution != null) {
+            Node temp = solution.parent;
+            while (temp != null) {
 
-        Node temp = solution.parent;
-        while(temp != null)
-        {
-
-            ((PathState)(temp.state)).get_current_Location().printLoc();
-            temp = temp.parent;
+                ((PathState) (temp.state)).get_current_Location().printLoc();
+                temp = temp.parent;
+            }
         }
 
 

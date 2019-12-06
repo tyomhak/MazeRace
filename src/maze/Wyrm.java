@@ -14,7 +14,7 @@ public class Wyrm
     Stack<Path> paths_stack;
     Stack<Room> rooms_stack;
     static Cell[][] maze;
-    Board board;
+    static Board board;
 
 
 
@@ -24,6 +24,11 @@ public class Wyrm
         maze = curr_board.get_maze();
         paths_stack = new Stack<Path>();
         rooms_stack = new Stack<Room>();
+    }
+
+    public static Board getBoard()
+    {
+        return board;
     }
     
     public void create_maze(int num)
@@ -192,7 +197,7 @@ public class Wyrm
 
             for (int m = 0; m < rooms_stack.size(); ++m) {
                 board.update();
-                Utils.wait(30);
+//                Utils.wait(1);
 
                 if(roomsMerged == rooms_stack.size())
                     return;
@@ -263,7 +268,7 @@ public class Wyrm
         int randRoomNumb = Utils.get_random(0, rooms_stack.size() - 1);
         Room randRoom = rooms_stack.get(randRoomNumb);
 
-        int randCellNumb = Utils.get_random(0, randRoom.room_cells.size());
+        int randCellNumb = Utils.get_random(0, randRoom.room_cells.size() - 1);
         Location randCell = randRoom.room_cells.get(randCellNumb);
 
         return randCell;
@@ -271,6 +276,7 @@ public class Wyrm
 
     /* Functions Needed For Creating_Rooms end here */
 
+    public static Cell[][] getMaze(){return  maze;}
 
 
     /* Functions Needed For Carving */
@@ -432,7 +438,7 @@ public class Wyrm
 
 
             board.update();
-            Utils.wait(5);
+//            Utils.wait(5);
             return false;
         }
 /* END COMMENT */

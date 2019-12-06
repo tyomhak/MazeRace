@@ -126,6 +126,10 @@ public class Board extends JPanel implements State
                 {
                     g.setColor(Color.ORANGE);
                 }
+                else if(maze[i][j].status == Cell_Status.TEST)
+                {
+                    g.setColor(Color.PINK);
+                }
                 else
                 {
                     g.setColor(Color.BLACK);
