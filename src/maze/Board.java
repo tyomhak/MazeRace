@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Stack;
 
@@ -13,10 +14,11 @@ import javax.swing.JPanel;
 import additional.Cell_Status;
 import additional.Location;
 
-import game.State;
-import game.Action;
 import game.game_additional.Item;
 import game.player.Player;
+
+import search.State;
+import search.Action;
 
 public class Board extends JPanel implements State
 {
@@ -55,10 +57,13 @@ public class Board extends JPanel implements State
         }
     }
 
-    public Set<Action> getApplicableActions(Location location)
+    public Set<Action> getApplicableActions()
     {
-        //Set<Action> actions = new LinkedHashSet<Action>();
+        
+        Set<Action> actions = new LinkedHashSet<Action>();
         // to be implemented . . .
+
+        
 
 //        if(location.get_row() > 0)
 //        {

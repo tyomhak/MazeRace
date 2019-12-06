@@ -1,14 +1,13 @@
-package game;
+package search;
 
-import game.Action;
+import search.Action;
 
 import java.util.Set;
 
-import additional.Location;
 
 public interface State
 {
 //    Player getPlayer();
-    Set<Action> getApplicableActions(Location location);
+    Set<Action> getApplicableActions();
     State getActionResult(Action action);
 }

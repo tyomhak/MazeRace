@@ -1,4 +1,4 @@
-package maze;
+package search;
 
 
 import additional.Cell_Status;
