@@ -54,14 +54,13 @@ public class GraphSearch implements Search
                     maze[tempLoc.get_row()][tempLoc.get_column()].status = Cell_Status.TEST;
                     Board b = Wyrm.getBoard();
                     b.update();
-//                    Utils.wait(1);
+                    Utils.wait(1);
 
-
-                    frontier.add_node(new Node(node, action, newState, node.depth + 1, 0));
 
                     // checking if we have been in the state, just pass it by,
                     if(!explored.contains(temp))
                     {
+                        frontier.add_node(new Node(node, action, newState, node.depth + 1, 0));
                     }
                 }
             }

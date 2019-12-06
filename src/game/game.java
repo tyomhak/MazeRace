@@ -1,6 +1,8 @@
 package game;
 
+import additional.Cell_Status;
 import additional.Location;
+import additional.Utils;
 import game.game_additional.Exit;
 import game.game_additional.Item;
 import game.player.Escaper;
@@ -37,7 +39,7 @@ public class game
 
     public void start_game()
     {
-        Board maze = new Board(200, 200);
+        Board maze = new Board(60, 60);
 
         JFrame obj = new JFrame();
         obj.setSize(768 + 50, 768 + 50);
@@ -59,7 +61,7 @@ public class game
         Item exit = new Exit(modified_maze.getRandRoomCell(), maze);
         maze.addItem(exit);
 
-        Frontier ourFrontier = new DepthFirstFrontier();//BreadthFirstFrontier();
+        Frontier ourFrontier = new BreadthFirstFrontier(); // new DepthFirstFrontier();//
         GraphSearch graphSearch = new GraphSearch(ourFrontier);
 
 
@@ -67,9 +69,12 @@ public class game
         if(solution != null) {
             Node temp = solution.parent;
             while (temp != null) {
-
-                ((PathState) (temp.state)).get_current_Location().printLoc();
+                Location tempLoc = ((PathState) (temp.state)).get_current_Location();
+//                ((PathState) (temp.state)).get_current_Location().printLoc();
+                maze.get_maze()[tempLoc.get_row()][tempLoc.get_column()].status = Cell_Status.NOTHING;
                 temp = temp.parent;
+                maze.update();
+                Utils.wait(10);
             }
         }
 
