@@ -2,17 +2,21 @@ package game.player;
 
 import additional.DIRECTION;
 import additional.Location;
+import additional.Utils;
 import game.game_additional.Exit;
 import game.game_additional.Item;
 import maze.Board;
+import search.SearchUtils.PathState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 public class Player
 {
-    Location    current_loc;    // location on the board
+    public Location    current_loc;    // location on the board
     Item        has_item;       // item the player is currently holding
     Integer     base_speed;     // how many cells per turn
     Integer     hit_points;     // health points
@@ -34,6 +38,11 @@ public class Player
 
         myColor = null;
     }   
+
+    public PathState get_state()
+    {
+        return new PathState(new LinkedHashSet<Location>(), current_loc);
+    }
 
     void move(DIRECTION dir)
     {
@@ -87,6 +96,11 @@ public class Player
         {
             board.set_status(false);
         }
+    }
+
+    int distance(Player otherPlayer)
+    {
+        return Utils.distance(this.current_loc, otherPlayer.current_loc);
     }
 
     public void draw(Graphics g)

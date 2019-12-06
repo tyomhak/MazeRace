@@ -76,7 +76,7 @@ public class Wyrm
     }
 
 
-    static ArrayList<Location> get_desired_cells( Location curr_loc, Cell_Status cell_desired1)
+    public static ArrayList<Location> get_desired_cells( Location curr_loc, Cell_Status cell_desired1)
     {
         return get_desired_cells(curr_loc, cell_desired1, null);
     }

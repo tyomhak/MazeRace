@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class Item
 {
-    Location current_loc;   // where the item is
+    public Location current_loc;   // where the item is
 
     // for later adding items
     Integer Damage;
@@ -25,6 +25,8 @@ public class Item
     { board = b; }
 
     void use(Player player) { };
+
+    public Integer getWeight(){return Weight;}
 
     public void draw(Graphics g)
     {

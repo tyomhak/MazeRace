@@ -17,6 +17,7 @@ import additional.Location;
 import game.game_additional.Item;
 import game.player.Player;
 
+import search.SearchUtils.Step;
 import search.State;
 import search.Action;
 
@@ -30,8 +31,8 @@ public class Board extends JPanel implements State
     int winWidth = 768;
     int winHeight = 768;
     public int cellSize;
-    ArrayList<Player> players;
-    ArrayList<Item> items;
+    public ArrayList<Player> players;
+    public ArrayList<Item> items;
 
     static boolean is_going;
 
@@ -66,7 +67,7 @@ public class Board extends JPanel implements State
     }
 
 
-    public Set<Action> getApplicableActions()
+    public ArrayList<Step> getApplicableActions()
     {
         
         Set<Action> actions = new LinkedHashSet<Action>();

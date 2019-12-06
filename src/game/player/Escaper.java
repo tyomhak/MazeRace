@@ -1,6 +1,7 @@
 package game.player;
 
 import additional.Location;
+import additional.Utils;
 import maze.Board;
 import search.Action;
 import search.State;
@@ -23,6 +24,9 @@ public class Escaper extends Player {
 
     public void update(Graphics g, Board board)
     {
+        //if(Utils.isWithin(this, board.))
+
+
         for(int i = 0; i < base_speed; ++i)
         {
             draw(g);
@@ -32,3 +36,4 @@ public class Escaper extends Player {
 
 
 }
+

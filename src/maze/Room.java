@@ -36,12 +36,14 @@ public class Room
         int max_height = maze_height / scale;   // setting the max limit for the height
         int max_width = maze_width   / scale;     // setting the max limit for the width
 
+        int row = get_random(1, maze_height - max_height - 3);
+        int col = get_random(1, maze_width - max_width - 3);
+
         // randomly selecting a number in between min and maximum width/height
         width = get_random(3, max_height );
         height = get_random(3, max_width );
 
-        int row = get_random(1, maze_height - max_height - 1);
-        int col = get_random(1, maze_width - max_width - 1);
+
         initialLocation = new Location(row,col);
 
     }
