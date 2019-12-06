@@ -33,6 +33,8 @@ public class Board extends JPanel implements State
     ArrayList<Player> players;
     ArrayList<Item> items;
 
+    static boolean is_going;
+
     private static final long serialVersionUID = 1L;
 
 
@@ -44,6 +46,7 @@ public class Board extends JPanel implements State
         mazeHeight = height;
         players = new ArrayList<Player>();
         items = new ArrayList<Item>();
+        is_going = true;
 
         cellSize = Math.min(winWidth / maze.length, winHeight/ maze[0].length);
 
@@ -56,6 +59,12 @@ public class Board extends JPanel implements State
             }
         }
     }
+
+    public static void set_status(boolean curr_status)
+    {
+        is_going = curr_status;
+    }
+
 
     public Set<Action> getApplicableActions()
     {
@@ -142,12 +151,12 @@ public class Board extends JPanel implements State
 
         for(int i = 0; i < players.size(); ++i)
         {
-            players.get(i).draw(g, this);
+            players.get(i).draw(g);
         }
 
         for(int i = 0; i < items.size(); ++i)
         {
-            items.get(i).draw(g, this);
+            items.get(i).draw(g);
         }
     }
 

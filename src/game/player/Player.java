@@ -2,6 +2,7 @@ package game.player;
 
 import additional.DIRECTION;
 import additional.Location;
+import game.game_additional.Exit;
 import game.game_additional.Item;
 import maze.Board;
 
@@ -16,11 +17,12 @@ public class Player
     Integer     base_speed;     // how many cells per turn
     Integer     hit_points;     // health points
     Integer     attack;         // damage inflicted on other players
-    Boolean     alive;          // to be or not to be 
+    Boolean     alive;          // to be or not to be
+    Board       board;
 
     Color myColor;
 
-    public Player(Location loc)
+    public Player(Location loc, Board b)
     {
         current_loc = loc;
         has_item = null;
@@ -28,24 +30,25 @@ public class Player
         hit_points = 100;
         attack = 0;
         alive = true;
+        board = b;
 
-        myColor = Color.GREEN;
+        myColor = null;
     }   
 
     void move(DIRECTION dir)
     {
         switch(dir) {
             case UP:
-                current_loc.set_row(current_loc.get_row() - base_speed );
+                current_loc.set_row(current_loc.get_row() - 1 );
                 break;
             case DOWN:
-                current_loc.set_row(current_loc.get_row() + base_speed );
+                current_loc.set_row(current_loc.get_row() + 1 );
                 break;
             case LEFT:
-                current_loc.set_column(current_loc.get_column() - base_speed );
+                current_loc.set_column(current_loc.get_column() - 1 );
                 break;
             case RIGHT:
-                current_loc.set_column(current_loc.get_column() + base_speed ); 
+                current_loc.set_column(current_loc.get_column() + 1 );
                 break;
             default:
                 return;     // stay in place   
@@ -80,14 +83,18 @@ public class Player
 
     void use_item(Item item)
     {
-        //if(Item.class == exit)
-        //to be implemented;
+        if(item instanceof Exit)
+        {
+            board.set_status(false);
+        }
     }
 
-    public void draw(Graphics g, Board board)
+    public void draw(Graphics g)
     {
         g.setColor(myColor);
         g.fillRect(current_loc.get_column() * board.cellSize, current_loc.get_row() * board.cellSize,  board.cellSize, board.cellSize);
     }
+
+    public void update(Graphics g, Board board){};
 
 };

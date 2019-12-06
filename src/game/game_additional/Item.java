@@ -16,12 +16,17 @@ public class Item
     Integer Health;
     Integer Weight;
 
+    Board board;
+
     // for drawing
     Color myColor;
 
+    public Item(Board b)
+    { board = b; }
+
     void use(Player player) { };
 
-    public void draw(Graphics g, Board board)
+    public void draw(Graphics g)
     {
         g.setColor(myColor);
         g.fillRect(current_loc.get_column() * board.cellSize, current_loc.get_row() * board.cellSize,  board.cellSize, board.cellSize);

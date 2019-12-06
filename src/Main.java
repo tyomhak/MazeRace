@@ -1,6 +1,7 @@
 //import game.*;
 import game.game_additional.Exit;
 import game.game_additional.Item;
+import game.player.Escaper;
 import game.player.Player;
 import maze.*;
 
@@ -27,10 +28,10 @@ public class Main
         //maze.print();
         maze.update();
 
-        Player player1 = new Player(modified_maze.getRandRoomCell());
+        Player player1 = new Escaper(modified_maze.getRandRoomCell(), maze);
         maze.addPlayer(player1);
 
-        Item exit = new Exit(modified_maze.getRandRoomCell());
+        Item exit = new Exit(modified_maze.getRandRoomCell(), maze);
         maze.addItem(exit);
 
         maze.update();
