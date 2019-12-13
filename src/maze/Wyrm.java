@@ -197,7 +197,7 @@ public class Wyrm
 
             for (int m = 0; m < rooms_stack.size(); ++m) {
                 board.update();
-//                Utils.wait(1);
+                Utils.wait(5);
 
                 if(roomsMerged == rooms_stack.size())
                     return;
@@ -438,7 +438,7 @@ public class Wyrm
 
 
             board.update();
-//            Utils.wait(5);
+            Utils.wait(5);
             return false;
         }
 /* END COMMENT */

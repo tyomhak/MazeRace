@@ -69,7 +69,7 @@ public class Path
 
             board.update();
 
-//            Utils.wait(5);
+            Utils.wait(5);
 
 
             if(is_dead_end(curr_loc))

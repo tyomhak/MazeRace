@@ -54,7 +54,7 @@ public class GraphSearch implements Search
                     maze[tempLoc.get_row()][tempLoc.get_column()].status = Cell_Status.TEST;
                     Board b = Wyrm.getBoard();
                     b.update();
-                    Utils.wait(1);
+//                    Utils.wait(5);
 
 
                     // checking if we have been in the state, just pass it by,
