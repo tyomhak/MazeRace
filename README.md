@@ -9,7 +9,7 @@ The **Whyrm** generates a complete and fully connected maze with rooms and paths
 ### AI agent search
 
 Two objects are placed into the maze: AI agent and the exit. 
-The AI agent uses Search algorythms with hueristic to find a path to the exit.
+The AI agent uses Search algorithms with hueristic to find a path to the exit.
 
 ## Contribution
 
